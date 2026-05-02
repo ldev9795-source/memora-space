@@ -2,7 +2,7 @@ import { TaskItem } from "./TaskItem.js";
 
 export function TimelineList(tasks, actions = {}, options = {}) {
   const root = document.createElement("section");
-  root.className = "timeline";
+  root.className = `timeline${options.variant ? ` timeline-${options.variant}` : ""}`;
   const visibleTasks = tasks.filter((task) => !task.stashed);
 
   if (!visibleTasks.length && !options.notes?.length) {

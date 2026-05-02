@@ -34,6 +34,7 @@ const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
 const state = {
   tab: "today",
   filter: "all",
+  todayScope: "open",
   query: "",
   selectedDate: todayISO(),
   onboardingDone: getOnboardingDone(),
@@ -246,6 +247,10 @@ const actions = {
   },
   onFilter(filter) {
     state.filter = filter;
+    render();
+  },
+  onTodayScope(scope) {
+    state.todayScope = scope;
     render();
   },
   onSearch(query) {
