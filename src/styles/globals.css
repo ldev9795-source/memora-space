@@ -691,8 +691,9 @@ button {
 }
 
 .calendar-card-v2 {
-  gap: 14px;
-  padding: 16px;
+  gap: 10px;
+  margin: 14px auto 18px;
+  padding: 12px;
 }
 
 .calendar-commandbar {
@@ -702,71 +703,63 @@ button {
   justify-content: space-between;
 }
 
+.calendar-mini-actions {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+}
+
 .calendar-today-button {
   background: var(--surface-strong);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-pill);
   color: var(--text);
   font-family: "Space Mono", monospace;
-  font-size: 10px;
-  min-height: 40px;
-  padding: 0 14px;
+  font-size: 9px;
+  min-height: 34px;
+  padding: 0 10px;
   text-transform: uppercase;
 }
 
-.calendar-focus {
+.calendar-compact-title {
   align-items: center;
-  display: grid;
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  display: flex;
   gap: 10px;
-  grid-template-columns: 44px 1fr 44px;
-  text-align: center;
+  justify-content: space-between;
+  padding: 10px 12px;
 }
 
-.calendar-focus h2 {
-  font-size: 34px;
+.calendar-compact-title h2 {
+  font-size: 24px;
   line-height: 1;
   margin: 4px 0 0;
 }
 
-.calendar-focus p {
+.calendar-compact-title p {
   color: var(--text-secondary);
-  font-size: 13px;
-  margin: 7px 0 0;
-}
-
-.calendar-day-hero {
-  align-items: center;
-  background: color-mix(in srgb, var(--text) 4%, transparent);
-  border: 1px solid var(--hairline);
-  border-radius: 22px;
-  display: grid;
-  gap: 14px;
-  grid-template-columns: 88px 1fr;
-  padding: 14px;
-}
-
-.calendar-day-hero strong {
-  display: block;
-  font-size: 46px;
-  line-height: 0.9;
-}
-
-.calendar-day-hero p {
-  color: var(--text-secondary);
+  font-family: "Space Mono", monospace;
   font-size: 14px;
-  line-height: 1.35;
   margin: 0;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.calendar-compact-title p strong {
+  color: var(--text);
 }
 
 .calendar-grid-v2 {
   background: color-mix(in srgb, var(--text) 3%, transparent);
   border: 1px solid var(--hairline);
-  border-radius: 22px;
-  padding: 8px;
+  border-radius: 18px;
+  padding: 6px;
 }
 
 .calendar-grid-v2 .day-cell {
-  min-height: 64px;
+  min-height: 46px;
 }
 
 .calendar-grid-v2 .day-cell.has-items:not(.selected) {
@@ -787,6 +780,7 @@ button {
 
 .calendar-actions-v2 {
   display: grid;
+  gap: 8px;
   grid-template-columns: 1fr 1fr;
 }
 
@@ -802,11 +796,11 @@ button {
 .calendar-feedback {
   background: color-mix(in srgb, var(--text) 4%, transparent);
   border: 1px solid var(--hairline);
-  border-radius: 16px;
+  border-radius: 14px;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.35;
-  padding: 11px 12px;
+  padding: 9px 11px;
   text-align: center;
 }
 
@@ -861,7 +855,7 @@ button {
   gap: 4px;
   grid-template-columns: 1fr 1fr;
   padding: 4px;
-  width: min(210px, 70%);
+  width: min(178px, 58%);
 }
 
 .calendar-mode button,
@@ -876,7 +870,7 @@ button {
   background: transparent;
   color: var(--text-secondary);
   font-size: 11px;
-  padding: 9px 12px;
+  padding: 8px 10px;
 }
 
 .calendar-mode button.active {
@@ -906,11 +900,11 @@ button {
   background: var(--surface-strong);
   color: var(--text);
   display: inline-flex;
-  font-size: 28px;
-  height: 42px;
+  font-size: 22px;
+  height: 34px;
   justify-content: center;
   padding-bottom: 3px;
-  width: 42px;
+  width: 34px;
 }
 
 .calendar-selected {
@@ -940,7 +934,7 @@ button {
 }
 
 .month-grid {
-  gap: 4px;
+  gap: 3px;
 }
 
 .day-cell {
@@ -978,15 +972,15 @@ button {
 }
 
 .month-grid .day-cell {
-  border-radius: 14px;
-  gap: 4px;
-  padding: 6px 1px;
+  border-radius: 12px;
+  gap: 2px;
+  padding: 4px 1px;
 }
 
 .month-grid .day-number {
-  font-size: 17px;
-  height: 24px;
-  width: 24px;
+  font-size: 15px;
+  height: 20px;
+  width: 20px;
 }
 
 .day-name {
@@ -2239,7 +2233,6 @@ button {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .calendar-day-hero,
   .folder-card {
     grid-template-columns: 1fr;
   }

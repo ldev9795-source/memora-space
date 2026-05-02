@@ -22,30 +22,25 @@ export function CalendarWidget(tasks, selectedDate, actions, options = {}) {
         <button class="${mode === "week" ? "active" : ""}" type="button" data-mode="week" aria-pressed="${mode === "week"}">Week</button>
         <button class="${mode === "month" ? "active" : ""}" type="button" data-mode="month" aria-pressed="${mode === "month"}">Month</button>
       </div>
-      <button class="calendar-today-button" type="button" data-setting="today">Today</button>
+      <div class="calendar-mini-actions">
+        <button class="calendar-nav" type="button" data-move="-1" aria-label="Previous ${mode}">‹</button>
+        <button class="calendar-today-button" type="button" data-setting="today">Today</button>
+        <button class="calendar-nav" type="button" data-move="1" aria-label="Next ${mode}">›</button>
+      </div>
     </div>
-    <div class="calendar-focus">
-      <button class="calendar-nav" type="button" data-move="-1" aria-label="Previous ${mode}">‹</button>
+    <div class="calendar-compact-title">
       <div>
         <span class="mono-label">${date.getFullYear()}</span>
         <h2>${date.toLocaleDateString(undefined, { month: "long" })}</h2>
-        <p>${date.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}</p>
       </div>
-      <button class="calendar-nav" type="button" data-move="1" aria-label="Next ${mode}">›</button>
-    </div>
-    <div class="calendar-day-hero">
-      <div>
-        <span class="mono-label">Selected</span>
-        <strong>${date.getDate()}</strong>
-      </div>
-      <p>${selectedTasks.length ? `${selectedTasks.length} scheduled · ${completed} done` : "No events yet. Add one below."}</p>
+      <p><strong>${date.getDate()}</strong> ${date.toLocaleDateString(undefined, { weekday: "short" })} · ${selectedTasks.length ? `${selectedTasks.length} items` : "clear"}</p>
     </div>
     <div class="${isMonth ? "month-grid" : "week-grid"} calendar-grid-v2"></div>
+    <div class="calendar-feedback" aria-live="polite">${selectedTasks.length ? `${selectedTasks.length} scheduled · ${completed} done` : "Tap a day or add an event."}</div>
     <div class="calendar-actions calendar-actions-v2">
       <button class="calendar-action secondary" type="button" data-action="reminder">${icons.today}<span>Reminder</span></button>
       <button class="calendar-action primary" type="button" data-action="event">${icons.plus}<span>Event</span></button>
     </div>
-    <div class="calendar-feedback" aria-live="polite">${feedbackText(selectedTasks, selectedDate)}</div>
   `;
 
   card.querySelectorAll("[data-mode]").forEach((button) => {
@@ -79,13 +74,6 @@ export function CalendarWidget(tasks, selectedDate, actions, options = {}) {
   });
 
   return card;
-}
-
-function feedbackText(tasks, selectedDate) {
-  if (!tasks.length) return "Tap Event or Reminder to start this day.";
-  const open = tasks.filter((task) => !task.completed).length;
-  const label = selectedDate === localISO(new Date()) ? "today" : "this day";
-  return open ? `${open} item${open === 1 ? "" : "s"} still open for ${label}.` : `Everything scheduled for ${label} is complete.`;
 }
 
 function startOfWeek(date) {
