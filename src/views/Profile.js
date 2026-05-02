@@ -15,8 +15,7 @@ export function ProfileView(state, actions) {
     <section class="profile-hero glass">
       <span class="profile-avatar large">${icons.user}</span>
       <h2>${escapeHTML(user.name)}</h2>
-      <p>${user.email ? escapeHTML(user.email) : "Local guest mode. Supabase Auth can connect here for synced profiles."}</p>
-      <button class="profile-primary" type="button" data-action="signin">Supabase Setup Status</button>
+      <p>${user.email ? escapeHTML(user.email) : "Local guest mode. Sign in anytime to sync this workspace."}</p>
     </section>
 
     <section class="settings-group" aria-label="Account">
@@ -33,9 +32,6 @@ export function ProfileView(state, actions) {
 
   root.querySelector(".settings-back").addEventListener("click", () => actions.onTab("settings"));
   const feedback = root.querySelector(".settings-feedback");
-  root.querySelector('[data-action="signin"]').addEventListener("click", () => {
-    feedback.textContent = "Supabase client is not configured yet.";
-  });
   root.querySelector('[data-action="copy-plan"]').addEventListener("click", async () => {
     await navigator.clipboard?.writeText("Configure supabase.config.js with your Supabase project URL and publishable key. Enable Google in Supabase Auth Providers, add this app origin to redirect URLs, then the existing Google and email OTP buttons will use Supabase Auth.");
     feedback.textContent = "Auth plan copied.";

@@ -6,6 +6,9 @@ export function TodayView(state, actions) {
   const root = document.createElement("main");
   root.className = "phone-frame page";
   const todayTasks = state.tasks.filter((task) => task.dueDate === todayISO() && !task.stashed);
+  const activeCount = todayTasks.filter((task) => !task.completed).length;
+  const doneCount = todayTasks.filter((task) => task.completed).length;
+  const focusTags = [...new Set(todayTasks.flatMap((task) => task.tags || []))].slice(0, 3);
   const overdue = state.tasks.some((task) => task.dueDate < todayISO() && !task.completed && !task.stashed);
 
   root.innerHTML = `
@@ -22,6 +25,11 @@ export function TodayView(state, actions) {
     <section class="install-banner glass">
       <span class="mono-label">Install Memora Space</span>
       <button class="pill-toggle active" type="button">Add</button>
+    </section>
+    <section class="today-insights" aria-label="Today overview">
+      <span><strong>${activeCount}</strong> Active</span>
+      <span><strong>${doneCount}</strong> Done</span>
+      ${focusTags.length ? focusTags.map((tag) => `<span>#${escapeHTML(tag)}</span>`).join("") : "<span>Clear focus</span>"}
     </section>
   `;
 
@@ -44,7 +52,8 @@ export function TodayView(state, actions) {
           time: "13:30",
           text: "This space keeps notes and tasks in one quiet stream. Finish what matters, stash what can wait, and let the day stay readable."
         }
-      ]
+      ],
+      completedEffectId: state.completedEffectId
     })
   );
 
@@ -55,4 +64,13 @@ export function TodayView(state, actions) {
   input.addEventListener("click", actions.onAdd);
   root.append(input);
   return root;
+}
+
+function escapeHTML(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }

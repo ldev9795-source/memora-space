@@ -9,10 +9,11 @@
 }
 
 [data-theme="dark"] .glass {
-  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  border-color: rgba(255, 255, 255, 0.09);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    0 16px 42px var(--shadow);
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 18px 48px var(--shadow);
 }
 
 .soft-card {

@@ -27,7 +27,7 @@ export function CalendarView(state, actions) {
   const list = document.createElement("section");
   list.className = "calendar-list";
   list.innerHTML = `<div class="calendar-list-heading"><span class="mono-label">Selected Day</span><strong>${selected.length}</strong></div>`;
-  list.append(TimelineList(selected, actions));
+  list.append(TimelineList(selected, actions, { completedEffectId: state.completedEffectId }));
   root.append(list);
   return root;
 }

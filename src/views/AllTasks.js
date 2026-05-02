@@ -34,7 +34,7 @@ export function AllTasksView(state, actions) {
     filterRow.append(button);
   });
 
-  root.append(TimelineList(applyFilter(state.tasks, state.filter, state.query), actions));
+  root.append(TimelineList(applyFilter(state.tasks, state.filter, state.query), actions, { completedEffectId: state.completedEffectId }));
   return root;
 }
 

@@ -24,7 +24,7 @@ export function TimelineList(tasks, actions = {}, options = {}) {
       content.append(p);
     });
 
-    group.tasks.forEach((task) => content.append(TaskItem(task, actions)));
+    group.tasks.forEach((task) => content.append(TaskItem(task, actions, { justCompleted: task.id === options.completedEffectId })));
     root.append(section);
   });
 
@@ -53,7 +53,8 @@ function groupByTime(tasks, notes) {
 
 function formatTime(value) {
   const [hours = "0", minutes = "00"] = value.split(":");
-  const date = new Date();
-  date.setHours(Number(hours), Number(minutes));
-  return date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }).replace(":", ".");
+  const hour = Number(hours);
+  const period = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:${String(minutes).padStart(2, "0")} ${period}`;
 }

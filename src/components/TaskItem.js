@@ -1,11 +1,11 @@
-export function TaskItem(task, actions = {}) {
+export function TaskItem(task, actions = {}, options = {}) {
   const subCount = task.subtasks?.length || 0;
   const doneSub = task.subtasks?.filter((subtask) => subtask.completed).length || 0;
   const dueBadge = getDueBadge(task);
   const tags = task.tags?.slice(0, 2) || [];
 
   const item = document.createElement("article");
-  item.className = `task-item${task.completed ? " completed" : ""}`;
+  item.className = `task-item${task.completed ? " completed" : ""}${options.justCompleted ? " completed-pop" : ""}`;
   item.dataset.id = task.id;
 
   item.innerHTML = `
@@ -71,10 +71,18 @@ function getDueBadge(task) {
   const today = new Date(`${localISO(now)}T00:00:00`);
   const diff = Math.round((due - today) / 86400000);
   if (diff < 0) return "overdue";
-  if (diff === 0) return task.dueTime || "today";
+  if (diff === 0) return task.dueTime ? formatClock(task.dueTime) : "today";
   if (diff === 1) return "tomorrow";
   if (diff < 7) return `${diff} days`;
   return due.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+function formatClock(value) {
+  const [hours = "0", minutes = "00"] = value.split(":");
+  const hour = Number(hours);
+  const period = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:${String(minutes).padStart(2, "0")} ${period}`;
 }
 
 function localISO(date) {

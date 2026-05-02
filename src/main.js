@@ -50,7 +50,8 @@ const state = {
   editingId: null,
   draftTask: null,
   installReady: false,
-  deferredPrompt: null
+  deferredPrompt: null,
+  completedEffectId: null
 };
 
 readAuthRedirectMessage();
@@ -214,6 +215,8 @@ const actions = {
     persist();
   },
   onToggle(id) {
+    const current = state.tasks.find((task) => task.id === id);
+    const willComplete = current && !current.completed;
     state.tasks = state.tasks.map((task) =>
       task.id === id
         ? {
@@ -223,7 +226,15 @@ const actions = {
           }
         : task
     );
+    state.completedEffectId = willComplete ? id : null;
     persist();
+    if (willComplete) {
+      window.setTimeout(() => {
+        if (state.completedEffectId !== id) return;
+        state.completedEffectId = null;
+        render();
+      }, 900);
+    }
   },
   onDelete(id) {
     state.tasks = state.tasks.filter((task) => task.id !== id);
