@@ -44,8 +44,10 @@ export function getSupabaseClient() {
 export function getAuthRedirectUrl() {
   const config = getSupabaseConfig();
   const configuredUrl = config?.siteUrl || config?.redirectTo;
-  const fallbackUrl = window.location.origin;
-  const url = configuredUrl || fallbackUrl;
+  const currentUrl = window.location.origin;
+  const isLocal = /^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/.test(window.location.host);
+  const canUseCurrentUrl = window.location.protocol.startsWith("http") && !isLocal;
+  const url = canUseCurrentUrl ? currentUrl : configuredUrl || currentUrl;
   return url.endsWith("/") ? url : `${url}/`;
 }
 

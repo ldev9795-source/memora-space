@@ -299,7 +299,9 @@ const actions = {
 };
 
 function readAuthRedirectMessage() {
-  const params = new URLSearchParams(window.location.search);
+  const queryParams = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const params = queryParams.get("error") || queryParams.get("error_description") ? queryParams : hashParams;
   const oauthError = params.get("error_description") || params.get("error");
   if (!oauthError) return;
   state.onboardingDone = true;
