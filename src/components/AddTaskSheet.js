@@ -72,7 +72,14 @@ export function AddTaskSheet(actions, task = null, draft = {}) {
     actions.onSave(isEditing ? { ...task, ...nextTask, id: task.id, completed: task.completed, stashed: task.stashed, folderId: task.folderId, createdAt: task.createdAt } : nextTask);
   });
 
-  setTimeout(() => overlay.querySelector(".title-input").focus(), 60);
+  overlay.querySelectorAll("input, textarea").forEach((control) => {
+    control.addEventListener("focus", () => {
+      window.setTimeout(() => {
+        control.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 180);
+    });
+  });
+
   return overlay;
 }
 

@@ -1,5 +1,6 @@
 import { BottomDock } from "./components/BottomDock.js";
 import { AddTaskSheet } from "./components/AddTaskSheet.js";
+import { FolderSheet } from "./components/FolderSheet.js";
 import { TodayView } from "./views/Today.js";
 import { AllTasksView } from "./views/AllTasks.js";
 import { CalendarView } from "./views/Calendar.js";
@@ -52,6 +53,7 @@ const state = {
   folders: loadFolders(),
   theme: getTheme() || preferredTheme,
   sheetOpen: false,
+  folderSheet: null,
   editingId: null,
   draftTask: null,
   installReady: false,
@@ -163,18 +165,22 @@ const actions = {
   },
   onTab(tab) {
     state.tab = tab;
+    state.folderSheet = null;
+    state.sheetOpen = false;
     state.calendarSettingsOpen = false;
     render();
   },
   onSettings() {
     state.tab = "settings";
     state.sheetOpen = false;
+    state.folderSheet = null;
     state.calendarSettingsOpen = false;
     render();
   },
   onProfile() {
     state.tab = "profile";
     state.sheetOpen = false;
+    state.folderSheet = null;
     state.calendarSettingsOpen = false;
     render();
   },
@@ -182,12 +188,14 @@ const actions = {
     state.sheetOpen = true;
     state.editingId = null;
     state.draftTask = null;
+    state.folderSheet = null;
     state.calendarSettingsOpen = false;
     render();
   },
   onAddForDate(date, kind = "task") {
     state.sheetOpen = true;
     state.editingId = null;
+    state.folderSheet = null;
     state.calendarSettingsOpen = false;
     state.draftTask = {
       dueDate: date,
@@ -203,6 +211,7 @@ const actions = {
     const folder = state.folders.find((item) => item.id === folderId);
     state.sheetOpen = true;
     state.editingId = null;
+    state.folderSheet = null;
     state.calendarSettingsOpen = false;
     state.draftTask = {
       dueDate: todayISO(),
@@ -220,6 +229,7 @@ const actions = {
     state.sheetOpen = true;
     state.editingId = id;
     state.draftTask = null;
+    state.folderSheet = null;
     state.calendarSettingsOpen = false;
     render();
   },
@@ -272,12 +282,36 @@ const actions = {
     render();
   },
   onFolderCreate() {
-    const name = prompt("Folder name");
-    if (!name?.trim()) return;
+    state.folderSheet = { mode: "create", id: null };
+    state.sheetOpen = false;
+    render();
+  },
+  onFolderEdit(id) {
+    const folder = state.folders.find((item) => item.id === id);
+    if (!folder) return;
+    state.folderSheet = { mode: "edit", id };
+    state.sheetOpen = false;
+    render();
+  },
+  onFolderSheetClose() {
+    state.folderSheet = null;
+    render();
+  },
+  onFolderSave(name) {
+    if (!name) return;
+    if (state.folderSheet?.mode === "edit") {
+      const id = state.folderSheet.id;
+      state.folders = state.folders.map((item) => (item.id === id ? { ...item, name } : item));
+      state.folderSheet = null;
+      saveFolders(state.folders);
+      render();
+      return;
+    }
+
     const colors = ["#0A84FF", "#9CFF00", "#FF9500", "#BF5AF2", "#FF3B30"];
     const folder = {
       id: crypto.randomUUID(),
-      name: name.trim(),
+      name,
       color: colors[state.folders.length % colors.length],
       description: "Personal folder",
       archived: false,
@@ -285,15 +319,7 @@ const actions = {
     };
     state.folders = [...state.folders, folder];
     state.folderId = folder.id;
-    saveFolders(state.folders);
-    render();
-  },
-  onFolderEdit(id) {
-    const folder = state.folders.find((item) => item.id === id);
-    if (!folder) return;
-    const name = prompt("Rename folder", folder.name);
-    if (!name?.trim()) return;
-    state.folders = state.folders.map((item) => (item.id === id ? { ...item, name: name.trim() } : item));
+    state.folderSheet = null;
     saveFolders(state.folders);
     render();
   },
@@ -369,7 +395,7 @@ const actions = {
     render();
   },
   onResetTasks() {
-    if (!confirm("Delete every local task and restore the starter data?")) return;
+    if (!confirm("Delete every local task and start with a clean workspace?")) return;
     localStorage.removeItem("memora_tasks");
     state.tasks = loadTasks();
     state.tab = "today";
@@ -424,6 +450,7 @@ function render() {
 
   app.append(view, BottomDock(state.tab, actions));
   if (state.sheetOpen) app.append(AddTaskSheet(actions, state.tasks.find((task) => task.id === state.editingId), state.draftTask || {}));
+  if (state.folderSheet) app.append(FolderSheet(actions, state.folders.find((folder) => folder.id === state.folderSheet.id)));
 }
 
 function localISO(date) {

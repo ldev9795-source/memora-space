@@ -23,9 +23,9 @@ export function CalendarWidget(tasks, selectedDate, actions, options = {}) {
         <button class="${mode === "month" ? "active" : ""}" type="button" data-mode="month" aria-pressed="${mode === "month"}">Month</button>
       </div>
       <div class="calendar-mini-actions">
-        <button class="calendar-nav" type="button" data-move="-1" aria-label="Previous ${mode}">‹</button>
+        <button class="calendar-nav" type="button" data-move="-1" aria-label="Previous ${mode}"><span aria-hidden="true">‹</span></button>
         <button class="calendar-today-button" type="button" data-setting="today">Today</button>
-        <button class="calendar-nav" type="button" data-move="1" aria-label="Next ${mode}">›</button>
+        <button class="calendar-nav" type="button" data-move="1" aria-label="Next ${mode}"><span aria-hidden="true">›</span></button>
       </div>
     </div>
     <div class="calendar-compact-title">

@@ -11,10 +11,10 @@
 
 @keyframes sheetIn {
   from {
-    transform: translateX(-50%) translateY(108%);
+    transform: translateY(108%);
   }
   to {
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
   }
 }
 

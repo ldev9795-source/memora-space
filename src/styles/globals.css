@@ -706,7 +706,7 @@ button {
 .calendar-mini-actions {
   align-items: center;
   display: flex;
-  gap: 5px;
+  gap: 6px;
 }
 
 .calendar-today-button {
@@ -716,8 +716,8 @@ button {
   color: var(--text);
   font-family: "Space Mono", monospace;
   font-size: 9px;
-  min-height: 34px;
-  padding: 0 10px;
+  min-height: 38px;
+  padding: 0 12px;
   text-transform: uppercase;
 }
 
@@ -898,13 +898,39 @@ button {
 .calendar-nav {
   align-items: center;
   background: var(--surface-strong);
+  border: 1px solid var(--hairline);
   color: var(--text);
   display: inline-flex;
-  font-size: 22px;
-  height: 34px;
+  font-size: 25px;
+  height: 38px;
   justify-content: center;
-  padding-bottom: 3px;
-  width: 34px;
+  line-height: 1;
+  min-width: 38px;
+  padding: 0 0 3px;
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+  width: 38px;
+}
+
+.calendar-nav span {
+  display: block;
+  transform: translateY(-1px);
+}
+
+.calendar-nav:hover,
+.calendar-nav:focus-visible,
+.calendar-today-button:hover,
+.calendar-today-button:focus-visible {
+  background: color-mix(in srgb, var(--accent-blue) 14%, var(--surface-strong));
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--shadow) 34%, transparent);
+  outline: none;
+}
+
+.calendar-nav:active,
+.calendar-today-button:active {
+  transform: scale(0.96);
 }
 
 .calendar-selected {
@@ -2021,9 +2047,14 @@ button {
 }
 
 .sheet-backdrop {
+  align-items: flex-end;
   animation: backdropIn 180ms ease both;
   background: rgba(0, 0, 0, 0.22);
+  display: flex;
   inset: 0;
+  justify-content: center;
+  overflow: hidden;
+  padding: 16px 8px 0;
   position: fixed;
   z-index: 2000;
 }
@@ -2031,18 +2062,20 @@ button {
 .add-sheet {
   animation: sheetIn 320ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
   border-radius: 28px 28px 0 0;
-  bottom: 0;
   display: grid;
   gap: 14px;
-  left: 50%;
-  max-height: min(88vh, 720px);
-  max-width: min(480px, calc(100vw - 14px));
+  max-height: min(76dvh, 640px);
+  max-width: min(480px, 100%);
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 10px 16px calc(22px + env(safe-area-inset-bottom));
-  position: absolute;
-  transform: translateX(-50%);
-  width: calc(100vw - 14px);
+  position: relative;
+  scroll-padding: 24px 0 120px;
+  width: 100%;
+}
+
+.add-sheet:focus-within {
+  max-height: min(68dvh, 560px);
 }
 
 .sheet-handle {
@@ -2135,6 +2168,70 @@ button {
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
+}
+
+.folder-sheet {
+  animation: sheetIn 300ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  border-radius: 28px 28px 0 0;
+  display: grid;
+  gap: 16px;
+  max-width: min(480px, 100%);
+  padding: 10px 16px calc(22px + env(safe-area-inset-bottom));
+  position: relative;
+  width: 100%;
+}
+
+.folder-sheet h2 {
+  font-size: 26px;
+  line-height: 1.02;
+  margin: 4px 0 0;
+}
+
+.folder-sheet p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 7px 0 0;
+}
+
+.folder-sheet label {
+  display: grid;
+  gap: 8px;
+}
+
+.folder-sheet input {
+  background: var(--surface-strong);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  color: var(--text);
+  font-size: 16px;
+  outline: none;
+  padding: 14px;
+}
+
+.folder-sheet-actions {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+}
+
+.folder-sheet-actions button {
+  border-radius: var(--radius-pill);
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  min-height: 52px;
+  text-transform: uppercase;
+}
+
+.folder-sheet-actions button:first-child {
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+  border: 1px solid var(--hairline);
+  color: var(--text);
+}
+
+.folder-sheet-actions button:last-child {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 700;
 }
 
 .icon-buttonish {
@@ -2242,7 +2339,6 @@ button {
     gap: 12px;
     padding-left: 12px;
     padding-right: 12px;
-    width: calc(100vw - 8px);
   }
 
   .sheet-grid {
