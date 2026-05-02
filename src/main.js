@@ -3,7 +3,7 @@ import { AddTaskSheet } from "./components/AddTaskSheet.js";
 import { FolderSheet } from "./components/FolderSheet.js";
 import { TodayView } from "./views/Today.js";
 import { AllTasksView } from "./views/AllTasks.js";
-import { CalendarView } from "./views/Calendar.js";
+import { NotesView } from "./views/Notes.js";
 import { StashView } from "./views/Stash.js";
 import { SettingsView } from "./views/Settings.js";
 import { ProfileView } from "./views/Profile.js";
@@ -23,9 +23,12 @@ import {
   getOnboardingDone,
   getTheme,
   getViewMode,
+  createNote,
   loadFolders,
+  loadNotes,
   loadTasks,
   saveFolders,
+  saveNotes,
   saveTasks,
   setAuthUser,
   setOnboardingDone,
@@ -54,6 +57,7 @@ const state = {
   folderId: "inbox",
   tasks: loadTasks(),
   folders: loadFolders(),
+  notes: loadNotes(),
   theme: getTheme() || preferredTheme,
   sheetOpen: false,
   folderSheet: null,
@@ -361,6 +365,22 @@ const actions = {
     state.query = query;
     render();
   },
+  onCreateNote(data) {
+    const note = createNote(data);
+    state.notes = [note, ...state.notes];
+    saveNotes(state.notes);
+    render();
+  },
+  onDeleteNote(id) {
+    state.notes = state.notes.filter((note) => note.id !== id);
+    saveNotes(state.notes);
+    render();
+  },
+  onToggleNotePin(id) {
+    state.notes = state.notes.map((note) => (note.id === id ? { ...note, pinned: !note.pinned } : note));
+    saveNotes(state.notes);
+    render();
+  },
   onViewMode(mode) {
     const nextMode = mode === "grid" ? "grid" : "list";
     if (state.viewMode === nextMode) return;
@@ -456,7 +476,7 @@ function render() {
   const view = {
     today: TodayView,
     tasks: AllTasksView,
-    calendar: CalendarView,
+    calendar: NotesView,
     stash: StashView,
     settings: SettingsView,
     profile: ProfileView

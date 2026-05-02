@@ -16,8 +16,6 @@ export function TodayView(state, actions) {
   const todayTasks = state.tasks.filter((task) => task.dueDate === today && !task.stashed);
   const openTasks = todayTasks.filter((task) => !task.completed);
   const doneTasks = todayTasks.filter((task) => task.completed);
-  const progress = todayTasks.length ? Math.round((doneTasks.length / todayTasks.length) * 100) : 0;
-  const nextTask = openTasks.slice().sort((a, b) => (a.dueTime || "23:59").localeCompare(b.dueTime || "23:59"))[0];
   const focusTags = [...new Set(todayTasks.flatMap((task) => task.tags || []))].slice(0, 4);
   const overdue = state.tasks.some((task) => task.dueDate < today && !task.completed && !task.stashed);
   const scope = state.todayScope || "open";
@@ -39,21 +37,11 @@ export function TodayView(state, actions) {
       <span class="mono-label">Install Memora Space</span>
       <button class="pill-toggle active" type="button">Add</button>
     </section>
-    <section class="today-hero glass" aria-label="Today summary">
-      <div class="today-progress" style="--progress:${progress}%">
-        <span>${progress}</span>
-        <small>%</small>
-      </div>
-      <div class="today-hero-copy">
-        <span class="mono-label">${openTasks.length ? "Next Focus" : "Day Clear"}</span>
-        <h2>${nextTask ? escapeHTML(nextTask.title) : "Nothing urgent waiting."}</h2>
-        <p>${nextTask ? `${formatClock(nextTask.dueTime || "09:00")} · ${escapeHTML(nextTask.priority)} priority` : "Add a task or let the list stay quiet."}</p>
-      </div>
-    </section>
-    <section class="today-actions" aria-label="Quick actions">
-      <button class="glass" type="button" data-action="add-task">${icons.plus}<span>Task</span></button>
-      <button class="glass" type="button" data-action="add-reminder">${icons.today}<span>Reminder</span></button>
-      <button class="glass" type="button" data-action="calendar">${icons.calendar}<span>Plan</span></button>
+    <section class="today-compact glass" aria-label="Today actions">
+      <button type="button" data-action="add-task">${icons.plus}<span>Task</span></button>
+      <button type="button" data-action="add-reminder">${icons.bell}<span>Reminder</span></button>
+      <button type="button" data-action="notes">${icons.note}<span>Note</span></button>
+      <button type="button" data-action="planner">${icons.calendar}<span>Plan</span></button>
     </section>
     <section class="today-metrics" aria-label="Today metrics">
       <span><strong>${openTasks.length}</strong> Open</span>
@@ -77,7 +65,8 @@ export function TodayView(state, actions) {
   root.querySelector(".settings-open").addEventListener("click", actions.onSettings);
   root.querySelector('[data-action="add-task"]').addEventListener("click", actions.onAdd);
   root.querySelector('[data-action="add-reminder"]').addEventListener("click", () => actions.onAddForDate(today, "reminder"));
-  root.querySelector('[data-action="calendar"]').addEventListener("click", () => actions.onTab("calendar"));
+  root.querySelector('[data-action="notes"]').addEventListener("click", () => actions.onTab("calendar"));
+  root.querySelector('[data-action="planner"]').addEventListener("click", () => actions.onTab("tasks"));
   root.querySelectorAll("[data-scope]").forEach((button) => {
     button.addEventListener("click", () => actions.onTodayScope(button.dataset.scope));
   });

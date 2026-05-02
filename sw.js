@@ -1,4 +1,4 @@
-const CACHE_NAME = "memora-space-v19";
+const CACHE_NAME = "memora-space-v20";
 const ASSETS = [
   "/",
   "/index.html",
@@ -11,10 +11,12 @@ const ASSETS = [
   "/src/components/CalendarWidget.js",
   "/src/components/TaskItem.js",
   "/src/components/TimelineList.js",
+  "/src/components/ViewToggle.js",
   "/src/components/icons.js",
   "/src/views/AllTasks.js",
   "/src/views/Calendar.js",
   "/src/views/Login.js",
+  "/src/views/Notes.js",
   "/src/views/Onboarding.js",
   "/src/views/Profile.js",
   "/src/views/Settings.js",

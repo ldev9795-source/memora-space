@@ -2,8 +2,8 @@ import { icons } from "./icons.js";
 
 const tabs = [
   ["today", "Today", icons.today],
-  ["tasks", "Tasks", icons.tasks],
-  ["calendar", "Calendar", icons.calendar],
+  ["tasks", "Planner", icons.tasks],
+  ["calendar", "Notes", icons.note],
   ["stash", "Folders", icons.stash]
 ];
 

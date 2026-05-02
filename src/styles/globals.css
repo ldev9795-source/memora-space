@@ -286,6 +286,43 @@ button {
   transform: translateY(-1px);
 }
 
+.today-compact {
+  align-items: center;
+  border-radius: 22px;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 8px 0 10px;
+  padding: 8px;
+}
+
+.today-compact button {
+  align-items: center;
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  color: var(--text);
+  display: grid;
+  font-family: "Space Mono", monospace;
+  font-size: 9px;
+  gap: 4px;
+  justify-items: center;
+  min-height: 52px;
+  min-width: 0;
+  padding: 7px 4px;
+  text-transform: uppercase;
+  transition: transform 160ms ease, background-color 160ms ease;
+}
+
+.today-compact button:active {
+  transform: scale(0.97);
+}
+
+.today-compact svg {
+  height: 18px;
+  width: 18px;
+}
+
 .today-metrics {
   border: 1px solid var(--hairline);
   border-radius: 20px;
@@ -713,7 +750,7 @@ button {
 .priority-high,
 .priority-badge.priority-high,
 .stash-priority.high {
-  --priority-color: var(--accent-green);
+  --priority-color: var(--accent-red);
 }
 
 .priority-medium,
@@ -926,7 +963,7 @@ button {
 }
 
 .calendar-grid-v2 .task-dot.high {
-  background: var(--accent-green);
+  background: var(--accent-red);
 }
 
 .calendar-grid-v2 .task-dot.medium {
@@ -1254,6 +1291,14 @@ button {
   height: 24px;
   justify-content: center;
   min-width: 24px;
+}
+
+.planner-page .calendar-card-v2 {
+  margin-top: 0;
+}
+
+.planner-calendar-slot {
+  margin-bottom: 8px;
 }
 
 .stash-summary {
@@ -1834,6 +1879,36 @@ button {
   text-transform: uppercase;
 }
 
+.settings-today-summary {
+  align-items: center;
+  border-radius: 24px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 64px minmax(0, 1fr);
+  padding: 14px;
+}
+
+.today-progress.mini {
+  width: 64px;
+}
+
+.today-progress.mini span {
+  font-size: 20px;
+}
+
+.settings-today-summary h3 {
+  font-size: 17px;
+  line-height: 1.18;
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.settings-today-summary p {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin: 6px 0 0;
+}
+
 .settings-list {
   border-radius: 22px;
   overflow: hidden;
@@ -2412,6 +2487,177 @@ button {
   font-weight: 700;
 }
 
+.notes-page {
+  padding-bottom: 128px;
+}
+
+.note-composer {
+  border-radius: 24px;
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 12px;
+}
+
+.note-composer input,
+.note-composer textarea {
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  color: var(--text);
+  min-width: 0;
+  outline: none;
+  padding: 12px;
+  resize: vertical;
+  width: 100%;
+}
+
+.note-composer input {
+  font-weight: 700;
+}
+
+.note-composer div {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.note-composer button,
+.notes-section-title button,
+.note-delete {
+  align-items: center;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  gap: 7px;
+  justify-content: center;
+  min-height: 42px;
+  text-transform: uppercase;
+}
+
+.note-composer button {
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+  border: 1px solid var(--hairline);
+}
+
+.note-composer button:last-child,
+.notes-section-title button {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.note-composer svg,
+.notes-section-title svg,
+.note-delete svg {
+  height: 17px;
+  width: 17px;
+}
+
+.reminder-strip {
+  border-radius: 24px;
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 12px;
+}
+
+.notes-section-title {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.reminder-list {
+  display: grid;
+  gap: 8px;
+}
+
+.reminder-item {
+  align-items: center;
+  background: color-mix(in srgb, var(--priority-color, var(--text)) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--priority-color, var(--text)) 22%, var(--hairline));
+  border-radius: 18px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 28px minmax(0, 1fr);
+  padding: 10px;
+}
+
+.reminder-item h2 {
+  font-size: 15px;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.reminder-item p {
+  color: var(--text-secondary);
+  font-size: 12px;
+  margin: 4px 0 0;
+}
+
+.notes-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.note-card {
+  border-radius: 22px;
+  display: grid;
+  gap: 8px;
+  min-height: 150px;
+  padding: 13px;
+}
+
+.note-card.pinned {
+  border-color: color-mix(in srgb, var(--accent-yellow) 34%, var(--hairline));
+}
+
+.note-card-top {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.note-card-top span {
+  color: var(--text-secondary);
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.note-card-top button {
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 0;
+}
+
+.note-card h2 {
+  font-size: 16px;
+  line-height: 1.16;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.note-card p {
+  color: var(--text-secondary);
+  display: -webkit-box;
+  font-size: 13px;
+  line-height: 1.42;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
+
+.note-delete {
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+  border: 1px solid var(--hairline);
+  color: var(--accent-red);
+  margin-top: auto;
+}
+
 .icon-buttonish {
   background: transparent;
   padding: 0;
@@ -2459,12 +2705,8 @@ button {
     left: 70px;
   }
 
-  .today-hero {
-    grid-template-columns: 78px minmax(0, 1fr);
-  }
-
-  .today-actions button {
-    min-height: 68px;
+  .today-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .today-section-heading {
@@ -2519,6 +2761,10 @@ button {
 
   .folder-tool-actions {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .notes-grid {
+    grid-template-columns: 1fr;
   }
 
   .folder-card {

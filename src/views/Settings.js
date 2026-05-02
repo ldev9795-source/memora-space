@@ -7,6 +7,11 @@ export function SettingsView(state, actions) {
   const active = state.tasks.filter((task) => !task.completed && !task.stashed).length;
   const completed = state.tasks.filter((task) => task.completed).length;
   const stashed = state.tasks.filter((task) => task.stashed).length;
+  const today = todayISO();
+  const todayTasks = state.tasks.filter((task) => task.dueDate === today && !task.stashed);
+  const doneToday = todayTasks.filter((task) => task.completed).length;
+  const progress = todayTasks.length ? Math.round((doneToday / todayTasks.length) * 100) : 0;
+  const nextTask = todayTasks.filter((task) => !task.completed).sort((a, b) => (a.dueTime || "23:59").localeCompare(b.dueTime || "23:59"))[0];
   const user = state.authUser || { name: "Guest workspace", provider: "guest" };
 
   root.innerHTML = `
@@ -23,6 +28,21 @@ export function SettingsView(state, actions) {
       </span>
       ${icons.chevronRight}
     </button>
+
+    <section class="settings-group" aria-label="Today summary">
+      <h2>Today Summary</h2>
+      <div class="settings-today-summary glass">
+        <div class="today-progress mini" style="--progress:${progress}%">
+          <span>${progress}</span>
+          <small>%</small>
+        </div>
+        <div>
+          <span class="mono-label">${nextTask ? "Next Focus" : "Day Clear"}</span>
+          <h3>${nextTask ? escapeHTML(nextTask.title) : "Nothing urgent waiting."}</h3>
+          <p>${nextTask ? `${formatClock(nextTask.dueTime || "09:00")} · ${escapeHTML(nextTask.priority)} priority` : "Add a task or let the list stay quiet."}</p>
+        </div>
+      </div>
+    </section>
 
     <section class="settings-group" aria-label="Appearance">
       <h2>Appearance</h2>
@@ -51,8 +71,8 @@ export function SettingsView(state, actions) {
       <h2>Shortcuts</h2>
       <div class="settings-list glass">
         <button class="settings-row" type="button" data-nav="today"><span class="settings-row-icon">${icons.today}</span><span>Today</span>${icons.chevronRight}</button>
-        <button class="settings-row" type="button" data-nav="tasks"><span class="settings-row-icon">${icons.tasks}</span><span>All Tasks</span>${icons.chevronRight}</button>
-        <button class="settings-row" type="button" data-nav="calendar"><span class="settings-row-icon">${icons.calendar}</span><span>Calendar</span>${icons.chevronRight}</button>
+        <button class="settings-row" type="button" data-nav="tasks"><span class="settings-row-icon">${icons.tasks}</span><span>Planner</span>${icons.chevronRight}</button>
+        <button class="settings-row" type="button" data-nav="calendar"><span class="settings-row-icon">${icons.note}</span><span>Notes & Reminders</span>${icons.chevronRight}</button>
         <button class="settings-row" type="button" data-nav="stash"><span class="settings-row-icon">${icons.stash}</span><span>Folders</span>${icons.chevronRight}</button>
       </div>
     </section>
@@ -96,4 +116,12 @@ function escapeHTML(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function formatClock(value) {
+  const [hours = "0", minutes = "00"] = value.split(":");
+  const hour = Number(hours);
+  const period = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:${String(minutes).padStart(2, "0")} ${period}`;
 }

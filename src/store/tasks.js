@@ -1,5 +1,6 @@
 const STORAGE_KEY = "memora_tasks";
 const FOLDERS_KEY = "memora_folders";
+const NOTES_KEY = "memora_notes";
 const THEME_KEY = "memora_theme";
 const VIEW_MODE_KEY = "memora_view_mode";
 const ONBOARDING_KEY = "memora_onboarding_done";
@@ -60,6 +61,34 @@ export function loadFolders() {
 
 export function saveFolders(folders) {
   localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
+}
+
+export function loadNotes() {
+  const raw = localStorage.getItem(NOTES_KEY);
+  if (!raw) return [];
+
+  try {
+    const notes = JSON.parse(raw);
+    return Array.isArray(notes) ? notes : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveNotes(notes) {
+  localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+}
+
+export function createNote(data) {
+  return {
+    id: crypto.randomUUID(),
+    title: data.title?.trim() || "Untitled note",
+    body: data.body?.trim() || "",
+    color: data.color || "default",
+    pinned: Boolean(data.pinned),
+    archived: false,
+    createdAt: new Date().toISOString()
+  };
 }
 
 export function createTask(data) {
