@@ -1,4 +1,4 @@
-const CACHE_NAME = "memora-space-v11";
+const CACHE_NAME = "memora-space-v12";
 const ASSETS = [
   "/",
   "/index.html",
