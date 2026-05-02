@@ -1,4 +1,5 @@
 import { TimelineList } from "../components/TimelineList.js";
+import { ViewToggle } from "../components/ViewToggle.js";
 import { icons } from "../components/icons.js";
 import { todayISO } from "../store/tasks.js";
 
@@ -19,7 +20,10 @@ export function AllTasksView(state, actions) {
       ${icons.search}
       <input type="search" placeholder="SEARCH" value="${escapeAttr(state.query || "")}" />
     </label>
-    <div class="filter-row"></div>
+    <div class="task-toolbar">
+      <div class="filter-row"></div>
+      <div class="view-toggle-slot"></div>
+    </div>
   `;
 
   root.querySelector(".theme-toggle").addEventListener("click", actions.onTheme);
@@ -33,8 +37,9 @@ export function AllTasksView(state, actions) {
     button.addEventListener("click", () => actions.onFilter(filter));
     filterRow.append(button);
   });
+  root.querySelector(".view-toggle-slot").append(ViewToggle(state.viewMode, actions, "Tasks view mode"));
 
-  root.append(TimelineList(applyFilter(state.tasks, state.filter, state.query), actions, { completedEffectId: state.completedEffectId }));
+  root.append(TimelineList(applyFilter(state.tasks, state.filter, state.query), actions, { completedEffectId: state.completedEffectId, viewMode: state.viewMode }));
   return root;
 }
 

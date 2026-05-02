@@ -1,6 +1,7 @@
 const STORAGE_KEY = "memora_tasks";
 const FOLDERS_KEY = "memora_folders";
 const THEME_KEY = "memora_theme";
+const VIEW_MODE_KEY = "memora_view_mode";
 const ONBOARDING_KEY = "memora_onboarding_done";
 const AUTH_KEY = "memora_auth_user";
 
@@ -71,7 +72,7 @@ export function createTask(data) {
     folderId: data.folderId || "",
     priority: data.priority || "low",
     tags: data.tags || [],
-    dueDate: data.dueDate || isoToday,
+    dueDate: data.dueDate || todayISO(),
     dueTime: data.dueTime || "",
     subtasks: data.subtasks || [],
     createdAt: new Date().toISOString()
@@ -84,6 +85,15 @@ export function getTheme() {
 
 export function setTheme(theme) {
   localStorage.setItem(THEME_KEY, theme);
+}
+
+export function getViewMode() {
+  const mode = localStorage.getItem(VIEW_MODE_KEY);
+  return mode === "grid" ? "grid" : "list";
+}
+
+export function setViewMode(mode) {
+  localStorage.setItem(VIEW_MODE_KEY, mode === "grid" ? "grid" : "list");
 }
 
 export function getOnboardingDone() {

@@ -1,4 +1,5 @@
 import { TimelineList } from "../components/TimelineList.js";
+import { ViewToggle } from "../components/ViewToggle.js";
 import { icons } from "../components/icons.js";
 import { todayISO } from "../store/tasks.js";
 
@@ -68,6 +69,7 @@ export function TodayView(state, actions) {
       <div class="today-scope" role="tablist" aria-label="Today task filter">
         ${scopes.map(([id, label]) => `<button type="button" class="${scope === id ? "active" : ""}" data-scope="${id}" role="tab" aria-selected="${scope === id ? "true" : "false"}">${label}</button>`).join("")}
       </div>
+      <div class="view-toggle-slot"></div>
     </section>
   `;
 
@@ -79,6 +81,7 @@ export function TodayView(state, actions) {
   root.querySelectorAll("[data-scope]").forEach((button) => {
     button.addEventListener("click", () => actions.onTodayScope(button.dataset.scope));
   });
+  root.querySelector(".view-toggle-slot").append(ViewToggle(state.viewMode, actions, "Today view mode"));
 
   const banner = root.querySelector(".install-banner");
   if (state.installReady) {
@@ -90,7 +93,8 @@ export function TodayView(state, actions) {
     TimelineList(scopedTasks, actions, {
       notes,
       completedEffectId: state.completedEffectId,
-      variant: "today"
+      variant: "today",
+      viewMode: state.viewMode
     })
   );
 

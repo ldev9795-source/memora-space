@@ -1,4 +1,5 @@
 import { icons } from "../components/icons.js";
+import { ViewToggle } from "../components/ViewToggle.js";
 
 export function StashView(state, actions) {
   const root = document.createElement("main");
@@ -31,19 +32,19 @@ export function StashView(state, actions) {
       ${activeFolders.map((folder) => folderButton(folder, state.folderId, filedTasks)).join("")}
       ${archivedFolders.length ? `<button class="folder-pill archived" type="button" data-folder-archive-list>Archived ${archivedFolders.length}</button>` : ""}
     </section>
-    <div class="folder-tools">
+    <div class="folder-tools glass">
       <label class="stash-search glass">
         ${icons.search}
         <input type="search" placeholder="Search folder" autocomplete="off" />
       </label>
-      <button class="stash-chip" type="button" data-action="edit-folder">Edit</button>
+      <div class="folder-tool-actions" aria-label="Folder actions">
+        <button type="button" data-action="new-task" aria-label="New task">${icons.plus}<span>Task</span></button>
+        <button type="button" data-action="rename" aria-label="Rename folder">${icons.copy}<span>Rename</span></button>
+        <button type="button" data-action="archive" aria-label="${selectedFolder?.archived ? "Unarchive folder" : "Archive folder"}">${icons.download}<span>${selectedFolder?.archived ? "Unarchive" : "Archive"}</span></button>
+        <button type="button" data-action="delete" aria-label="Delete folder">${icons.trash}<span>Delete</span></button>
+      </div>
+      <div class="view-toggle-slot"></div>
     </div>
-    <section class="folder-manager glass" aria-label="Folder actions">
-      <button type="button" data-action="new-task">${icons.plus}<span>New Task</span></button>
-      <button type="button" data-action="rename">${icons.copy}<span>Rename</span></button>
-      <button type="button" data-action="archive">${icons.download}<span>${selectedFolder?.archived ? "Unarchive" : "Archive"}</span></button>
-      <button type="button" data-action="delete">${icons.trash}<span>Delete</span></button>
-    </section>
     <section class="stash-list folder-task-list" aria-label="Folder items"></section>
   `;
 
@@ -56,16 +57,17 @@ export function StashView(state, actions) {
     if (archivedFolders[0]) actions.onFolderSelect(archivedFolders[0].id);
   });
   root.querySelector('[data-action="new-task"]').addEventListener("click", () => actions.onAddToFolder(selectedFolder?.id || "inbox"));
-  root.querySelector('[data-action="edit-folder"]').addEventListener("click", () => actions.onFolderEdit(selectedFolder?.id));
   root.querySelector('[data-action="rename"]').addEventListener("click", () => actions.onFolderEdit(selectedFolder?.id));
   root.querySelector('[data-action="archive"]').addEventListener("click", () => actions.onFolderArchive(selectedFolder?.id));
   root.querySelector('[data-action="delete"]').addEventListener("click", () => actions.onFolderDelete(selectedFolder?.id));
+  root.querySelector(".view-toggle-slot").append(ViewToggle(state.viewMode, actions, "Folder view mode"));
 
   const list = root.querySelector(".folder-task-list");
   const search = root.querySelector(".stash-search input");
 
   const renderList = (query = "") => {
     list.replaceChildren();
+    list.classList.toggle("folder-grid-mode", state.viewMode === "grid");
     const needle = query.trim().toLowerCase();
     const visible = needle
       ? folderTasks.filter((task) => `${task.title} ${task.notes || ""} ${(task.tags || []).join(" ")}`.toLowerCase().includes(needle))
@@ -76,7 +78,7 @@ export function StashView(state, actions) {
       return;
     }
 
-    visible.forEach((task) => list.append(folderTaskCard(task, folders, actions)));
+    visible.forEach((task) => list.append(folderTaskCard(task, folders, actions, state.viewMode)));
   };
 
   search.addEventListener("input", (event) => renderList(event.target.value));
@@ -89,9 +91,9 @@ function folderButton(folder, selectedId, tasks) {
   return `<button class="folder-pill${folder.id === selectedId ? " active" : ""}" type="button" data-folder="${folder.id}" style="--folder-color:${folder.color}"><span></span>${escapeHTML(folder.name)} <strong>${count}</strong></button>`;
 }
 
-function folderTaskCard(task, folders, actions) {
+function folderTaskCard(task, folders, actions, viewMode = "list") {
   const item = document.createElement("article");
-  item.className = "stash-card folder-card glass";
+  item.className = `stash-card folder-card glass priority-${task.priority || "low"}${task.completed ? " completed" : ""}${viewMode === "grid" ? " folder-card-grid" : ""}`;
   const date = task.dueDate ? new Date(`${task.dueDate}T${task.dueTime || "09:00"}`) : new Date(task.createdAt);
   const tagMarkup = (task.tags || []).slice(0, 3).map((tag) => `<span class="badge">#${escapeHTML(tag)}</span>`).join("");
   item.innerHTML = `

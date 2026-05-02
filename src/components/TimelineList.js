@@ -2,11 +2,33 @@ import { TaskItem } from "./TaskItem.js";
 
 export function TimelineList(tasks, actions = {}, options = {}) {
   const root = document.createElement("section");
-  root.className = `timeline${options.variant ? ` timeline-${options.variant}` : ""}`;
+  const isGrid = options.viewMode === "grid";
+  root.className = `timeline${options.variant ? ` timeline-${options.variant}` : ""}${isGrid ? " timeline-grid-mode" : ""}`;
   const visibleTasks = tasks.filter((task) => !task.stashed);
 
   if (!visibleTasks.length && !options.notes?.length) {
     root.innerHTML = `<p class="empty-state">NO TASKS HERE. THE SPACE IS CLEAR.</p>`;
+    return root;
+  }
+
+  if (isGrid) {
+    const grid = document.createElement("div");
+    grid.className = "task-grid";
+    const notes = (options.notes || []).map((note) => ({ ...note, type: "note" }));
+    const taskCards = visibleTasks.map((task) => ({ ...task, type: "task", time: task.dueTime || "09:00" }));
+    [...notes, ...taskCards]
+      .sort((a, b) => (a.time || "09:00").localeCompare(b.time || "09:00"))
+      .forEach((item) => {
+        if (item.type === "note") {
+          const note = document.createElement("article");
+          note.className = "journal journal-card";
+          note.innerHTML = `<span class="timestamp-pill">${formatTime(item.time || "10:30")}</span><p>${escapeHTML(item.text)}</p>`;
+          grid.append(note);
+          return;
+        }
+        grid.append(TaskItem(item, actions, { justCompleted: item.id === options.completedEffectId, mode: "grid" }));
+      });
+    root.append(grid);
     return root;
   }
 
@@ -29,6 +51,15 @@ export function TimelineList(tasks, actions = {}, options = {}) {
   });
 
   return root;
+}
+
+function escapeHTML(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function groupByTime(tasks, notes) {

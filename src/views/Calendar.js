@@ -1,5 +1,6 @@
 import { CalendarWidget } from "../components/CalendarWidget.js";
 import { TimelineList } from "../components/TimelineList.js";
+import { ViewToggle } from "../components/ViewToggle.js";
 import { icons } from "../components/icons.js";
 
 export function CalendarView(state, actions) {
@@ -27,8 +28,9 @@ export function CalendarView(state, actions) {
   );
   const list = document.createElement("section");
   list.className = "calendar-list";
-  list.innerHTML = `<div class="calendar-list-heading"><span class="mono-label">Agenda</span><strong>${selected.length}</strong></div>`;
-  list.append(TimelineList(selected, actions, { completedEffectId: state.completedEffectId }));
+  list.innerHTML = `<div class="calendar-list-heading"><span class="mono-label">Agenda</span><div class="calendar-list-tools"><strong>${selected.length}</strong><span class="view-toggle-slot"></span></div></div>`;
+  list.querySelector(".view-toggle-slot").append(ViewToggle(state.viewMode, actions, "Calendar agenda view mode"));
+  list.append(TimelineList(selected, actions, { completedEffectId: state.completedEffectId, viewMode: state.viewMode }));
   root.append(list);
   return root;
 }

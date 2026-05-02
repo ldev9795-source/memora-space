@@ -18,6 +18,8 @@ export const icons = {
   arrowLeft: `<svg ${attrs}><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>`,
   download: `<svg ${attrs}><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>`,
   menu: `<svg ${attrs}><path d="M4 7h16"/><path d="M8 12h12"/><path d="M12 17h8"/></svg>`,
+  list: `<svg ${attrs}><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>`,
+  grid: `<svg ${attrs}><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>`,
   mic: `<svg ${attrs}><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg>`,
   moon: `<svg ${attrs}><path d="M12 3a6 6 0 0 0 9 7.5A9 9 0 1 1 12 3z"/></svg>`,
   sun: `<svg ${attrs}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg>`,

@@ -3,9 +3,10 @@ export function TaskItem(task, actions = {}, options = {}) {
   const doneSub = task.subtasks?.filter((subtask) => subtask.completed).length || 0;
   const dueBadge = getDueBadge(task);
   const tags = task.tags?.slice(0, 2) || [];
+  const priority = task.priority || "low";
 
   const item = document.createElement("article");
-  item.className = `task-item${task.completed ? " completed" : ""}${options.justCompleted ? " completed-pop" : ""}`;
+  item.className = `task-item priority-${priority}${options.mode === "grid" ? " task-card-mode" : ""}${task.completed ? " completed" : ""}${options.justCompleted ? " completed-pop" : ""}`;
   item.dataset.id = task.id;
 
   item.innerHTML = `
@@ -18,7 +19,7 @@ export function TaskItem(task, actions = {}, options = {}) {
       <div class="badges">
         ${dueBadge ? `<span class="badge filled">${dueBadge}</span>` : ""}
         ${subCount ? `<span class="badge">${doneSub}/${subCount}</span>` : ""}
-        <span class="badge">${task.priority}</span>
+        <span class="badge priority-badge priority-${priority}">${priority}</span>
         ${tags.map((tag) => `<span class="badge">#${escapeHTML(tag)}</span>`).join("")}
       </div>
     </div>

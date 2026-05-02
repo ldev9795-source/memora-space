@@ -22,6 +22,7 @@ import {
   getAuthUser,
   getOnboardingDone,
   getTheme,
+  getViewMode,
   loadFolders,
   loadTasks,
   saveFolders,
@@ -29,6 +30,7 @@ import {
   setAuthUser,
   setOnboardingDone,
   setTheme,
+  setViewMode,
   todayISO
 } from "./store/tasks.js";
 
@@ -47,6 +49,7 @@ const state = {
   pendingCode: "",
   authMessage: "",
   calendarMode: "week",
+  viewMode: getViewMode(),
   calendarSettingsOpen: false,
   folderId: "inbox",
   tasks: loadTasks(),
@@ -164,6 +167,7 @@ const actions = {
     render();
   },
   onTab(tab) {
+    if (state.tab === tab && !state.sheetOpen && !state.folderSheet && !state.calendarSettingsOpen) return;
     state.tab = tab;
     state.folderSheet = null;
     state.sheetOpen = false;
@@ -343,15 +347,25 @@ const actions = {
     persist();
   },
   onFilter(filter) {
+    if (state.filter === filter) return;
     state.filter = filter;
     render();
   },
   onTodayScope(scope) {
+    if (state.todayScope === scope) return;
     state.todayScope = scope;
     render();
   },
   onSearch(query) {
+    if (state.query === query) return;
     state.query = query;
+    render();
+  },
+  onViewMode(mode) {
+    const nextMode = mode === "grid" ? "grid" : "list";
+    if (state.viewMode === nextMode) return;
+    state.viewMode = nextMode;
+    setViewMode(nextMode);
     render();
   },
   onSelect(date) {

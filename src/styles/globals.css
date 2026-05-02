@@ -10,6 +10,8 @@
   --accent-red: #ff3b30;
   --accent-orange: #ff9500;
   --accent-blue: #0a84ff;
+  --accent-green: #30d158;
+  --accent-yellow: #ffd60a;
   --hairline: rgba(0, 0, 0, 0.08);
   --shadow: rgba(31, 31, 36, 0.13);
   --dock: rgba(255, 255, 255, 0.6);
@@ -338,7 +340,7 @@ button {
   align-items: end;
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   margin: 18px 0 10px;
 }
 
@@ -372,6 +374,64 @@ button {
 .today-scope button.active {
   background: var(--text);
   color: var(--bg);
+}
+
+.view-toggle {
+  align-items: center;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-pill);
+  display: inline-grid;
+  gap: 3px;
+  grid-template-columns: repeat(2, 34px);
+  padding: 3px;
+}
+
+.view-toggle button {
+  align-items: center;
+  background: transparent;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  height: 32px;
+  justify-content: center;
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+  width: 34px;
+}
+
+.view-toggle button.active {
+  background: var(--surface-strong);
+  color: var(--text);
+  box-shadow: 0 7px 18px color-mix(in srgb, var(--shadow) 48%, transparent);
+}
+
+.view-toggle button:active {
+  transform: scale(0.96);
+}
+
+.view-toggle svg {
+  height: 16px;
+  width: 16px;
+}
+
+.task-toolbar,
+.calendar-list-tools {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.task-toolbar {
+  margin-top: 14px;
+}
+
+.task-toolbar .filter-row {
+  flex: 1;
+  margin-top: 0;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 2px;
 }
 
 .page {
@@ -473,6 +533,60 @@ button {
   font-size: 17px;
 }
 
+.timeline-grid-mode {
+  padding-left: 0;
+}
+
+.timeline-grid-mode::before {
+  display: none;
+}
+
+.timeline-grid-mode .task-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.timeline-grid-mode .task-item {
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+  border: 1px solid var(--hairline);
+  border-radius: 20px;
+  grid-template-columns: 26px minmax(0, 1fr);
+  min-height: 148px;
+  padding: 13px;
+}
+
+.timeline-grid-mode .task-actions {
+  display: none;
+}
+
+.timeline-grid-mode .task-title {
+  font-size: 15px;
+}
+
+.timeline-grid-mode .task-notes {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.journal-card {
+  display: grid;
+  gap: 10px;
+  min-height: 148px;
+}
+
+.journal-card .timestamp-pill {
+  justify-self: start;
+  position: static;
+  transform: none;
+}
+
+.journal-card p {
+  margin: 0;
+}
+
 .task-item {
   align-items: flex-start;
   border-bottom: 1px dashed var(--hairline);
@@ -481,11 +595,13 @@ button {
   grid-template-columns: 28px 1fr auto;
   padding: 14px 0;
   position: relative;
-  transition: opacity 220ms ease, transform 220ms ease, background 220ms ease;
+  transition: opacity 220ms ease, transform 220ms ease, background 220ms ease, border-color 220ms ease;
 }
 
 .task-item.completed {
-  opacity: 0.62;
+  background: color-mix(in srgb, var(--accent-green) 8%, transparent);
+  border-color: color-mix(in srgb, var(--accent-green) 28%, transparent);
+  opacity: 0.78;
   transform: translateY(-1px);
 }
 
@@ -495,8 +611,8 @@ button {
 
 .task-item.completed-pop::before {
   animation: completeGlow 720ms ease both;
-  background: color-mix(in srgb, var(--accent-blue) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent-blue) 22%, transparent);
+  background: color-mix(in srgb, var(--accent-green) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-green) 28%, transparent);
   border-radius: 18px;
   bottom: 6px;
   content: "";
@@ -506,6 +622,18 @@ button {
   right: -10px;
   top: 6px;
   z-index: -1;
+}
+
+.task-item.completed::after,
+.stash-card.completed::after {
+  background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
+  border-radius: 999px;
+  bottom: 0;
+  content: "";
+  height: 3px;
+  left: 14px;
+  position: absolute;
+  right: 14px;
 }
 
 .task-checkbox {
@@ -522,10 +650,10 @@ button {
 }
 
 .task-checkbox.checked {
-  background: var(--accent-blue);
-  border-color: var(--accent-blue);
+  background: var(--accent-green);
+  border-color: var(--accent-green);
   color: white;
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent-blue) 14%, transparent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent-green) 16%, transparent);
 }
 
 .task-title {
@@ -549,6 +677,7 @@ button {
 }
 
 .completed .task-title::after {
+  background: var(--accent-green);
   transform: scaleX(1);
 }
 
@@ -579,6 +708,36 @@ button {
   background: var(--text);
   border-color: var(--text);
   color: var(--bg);
+}
+
+.priority-high,
+.priority-badge.priority-high,
+.stash-priority.high {
+  --priority-color: var(--accent-green);
+}
+
+.priority-medium,
+.priority-badge.priority-medium,
+.stash-priority.medium {
+  --priority-color: var(--accent-blue);
+}
+
+.priority-low,
+.priority-badge.priority-low,
+.stash-priority.low {
+  --priority-color: var(--accent-yellow);
+}
+
+.task-item.priority-high,
+.stash-card.priority-high {
+  border-color: color-mix(in srgb, var(--priority-color) 22%, var(--hairline));
+}
+
+.priority-badge,
+.stash-priority {
+  background: color-mix(in srgb, var(--priority-color, var(--text)) 12%, transparent);
+  border-color: color-mix(in srgb, var(--priority-color, var(--text)) 34%, transparent);
+  color: color-mix(in srgb, var(--priority-color, var(--text)) 86%, var(--text));
 }
 
 .task-actions {
@@ -767,15 +926,15 @@ button {
 }
 
 .calendar-grid-v2 .task-dot.high {
-  background: var(--accent-red);
+  background: var(--accent-green);
 }
 
 .calendar-grid-v2 .task-dot.medium {
-  background: var(--accent-orange);
+  background: var(--accent-blue);
 }
 
 .calendar-grid-v2 .task-dot.low {
-  background: var(--accent-blue);
+  background: var(--accent-yellow);
 }
 
 .calendar-actions-v2 {
@@ -1137,7 +1296,7 @@ button {
 
 .folder-hero-icon svg,
 .folder-create svg,
-.folder-manager svg {
+.folder-tool-actions svg {
   height: 21px;
   width: 21px;
 }
@@ -1206,48 +1365,70 @@ button {
 }
 
 .folder-tools {
-  align-items: center;
+  align-items: stretch;
   display: grid;
-  gap: 10px;
+  gap: 9px;
   grid-template-columns: minmax(0, 1fr) auto;
   margin-bottom: 12px;
+  padding: 8px;
 }
 
-.folder-manager {
-  border-radius: 22px;
+.folder-tools .stash-search {
+  margin: 0;
+}
+
+.folder-tool-actions {
   display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-bottom: 14px;
-  padding: 10px;
+  gap: 6px;
+  grid-template-columns: repeat(4, 42px);
 }
 
-.folder-manager button {
+.folder-tool-actions button {
   align-items: center;
   background: color-mix(in srgb, var(--text) 5%, transparent);
-  border-radius: 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
   color: var(--text);
   display: grid;
   font-family: "Space Mono", monospace;
-  font-size: 9px;
-  gap: 5px;
+  font-size: 8px;
+  gap: 3px;
   justify-items: center;
-  min-height: 58px;
+  min-height: 44px;
   min-width: 0;
-  padding: 8px 4px;
+  padding: 6px 4px;
   text-transform: uppercase;
 }
 
-.folder-manager button[data-action="delete"] {
+.folder-tool-actions button svg {
+  height: 17px;
+  width: 17px;
+}
+
+.folder-tool-actions button[data-action="delete"] {
   color: var(--accent-red);
+}
+
+.folder-tools .view-toggle-slot {
+  grid-column: 1 / -1;
+  justify-self: end;
 }
 
 .folder-task-list {
   padding-bottom: 26px;
 }
 
+.folder-task-list.folder-grid-mode {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .folder-card {
   grid-template-columns: 72px minmax(0, 1fr);
+  position: relative;
+}
+
+.stash-card.folder-card-grid {
+  grid-template-columns: 1fr;
 }
 
 .folder-move {
@@ -1360,6 +1541,7 @@ button {
   gap: 14px;
   grid-template-columns: 74px minmax(0, 1fr);
   padding: 14px;
+  position: relative;
 }
 
 .stash-card-meta {
@@ -1398,10 +1580,6 @@ button {
   font-size: 10px;
   padding: 3px 8px;
   text-transform: uppercase;
-}
-
-.stash-priority.high {
-  color: var(--accent-red);
 }
 
 .stash-card h2 {
@@ -2291,6 +2469,15 @@ button {
 
   .today-section-heading {
     align-items: stretch;
+    grid-template-columns: 1fr auto;
+  }
+
+  .today-section-heading > div:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .timeline-grid-mode .task-grid,
+  .folder-task-list.folder-grid-mode {
     grid-template-columns: 1fr;
   }
 
@@ -2326,8 +2513,12 @@ button {
     width: 100%;
   }
 
-  .folder-manager {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .folder-tools {
+    grid-template-columns: 1fr;
+  }
+
+  .folder-tool-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .folder-card {
