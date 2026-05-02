@@ -7,7 +7,7 @@ export function LoginView(state, actions) {
 
   root.innerHTML = `
     <section class="auth-card glass">
-      <span class="auth-mark">${icons.layers}</span>
+      <span class="auth-mark">${icons.brand}</span>
       <div class="auth-copy">
         <span class="mono-label">Sign in</span>
         <h1>Start with your account.</h1>

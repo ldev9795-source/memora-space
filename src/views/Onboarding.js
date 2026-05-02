@@ -30,7 +30,7 @@ export function OnboardingView(state, actions) {
   root.innerHTML = `
     <section class="onboarding-card glass">
       <div class="onboarding-top">
-        <span class="mono-label">Memora Space</span>
+        <span class="onboarding-brand">${icons.brand}<span class="mono-label">Memora Space</span></span>
         <button type="button" class="onboarding-skip">Skip</button>
       </div>
       <div class="onboarding-visual">

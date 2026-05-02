@@ -1,4 +1,4 @@
-const CACHE_NAME = "memora-space-v12";
+const CACHE_NAME = "memora-space-v13";
 const ASSETS = [
   "/",
   "/index.html",
@@ -25,7 +25,11 @@ const ASSETS = [
   "/src/styles/dock.css",
   "/src/styles/animations.css",
   "/public/manifest.json",
-  "/public/icon.svg"
+  "/public/favicon-64.png",
+  "/public/apple-touch-icon.png",
+  "/public/icon-192.png",
+  "/public/icon-512.png",
+  "/public/logo-mark.png"
 ];
 
 self.addEventListener("install", (event) => {
