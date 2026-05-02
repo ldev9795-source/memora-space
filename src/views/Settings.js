@@ -43,7 +43,7 @@ export function SettingsView(state, actions) {
       <div class="settings-stats-compact glass">
         <span><strong>${active}</strong>Active</span>
         <span><strong>${completed}</strong>Done</span>
-        <span><strong>${stashed}</strong>Stashed</span>
+        <span><strong>${stashed}</strong>Filed</span>
       </div>
     </section>
 
@@ -53,7 +53,7 @@ export function SettingsView(state, actions) {
         <button class="settings-row" type="button" data-nav="today"><span class="settings-row-icon">${icons.today}</span><span>Today</span>${icons.chevronRight}</button>
         <button class="settings-row" type="button" data-nav="tasks"><span class="settings-row-icon">${icons.tasks}</span><span>All Tasks</span>${icons.chevronRight}</button>
         <button class="settings-row" type="button" data-nav="calendar"><span class="settings-row-icon">${icons.calendar}</span><span>Calendar</span>${icons.chevronRight}</button>
-        <button class="settings-row" type="button" data-nav="stash"><span class="settings-row-icon">${icons.stash}</span><span>Stash</span>${icons.chevronRight}</button>
+        <button class="settings-row" type="button" data-nav="stash"><span class="settings-row-icon">${icons.stash}</span><span>Folders</span>${icons.chevronRight}</button>
       </div>
     </section>
 

@@ -4,7 +4,7 @@ const tabs = [
   ["today", "Today", icons.today],
   ["tasks", "Tasks", icons.tasks],
   ["calendar", "Calendar", icons.calendar],
-  ["stash", "Stash", icons.stash]
+  ["stash", "Folders", icons.stash]
 ];
 
 export function BottomDock(activeTab, actions) {

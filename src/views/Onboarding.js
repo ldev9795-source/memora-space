@@ -15,8 +15,8 @@ const slides = [
   },
   {
     eyebrow: "Save",
-    title: "Stash what can wait.",
-    copy: "Archive ideas, fetch them later, and keep the main list focused on now.",
+    title: "Folders for everything later.",
+    copy: "Create personal spaces, file paused tasks, and bring them back when they matter.",
     icon: icons.stash
   }
 ];

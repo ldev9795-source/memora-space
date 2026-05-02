@@ -69,7 +69,7 @@ export function AddTaskSheet(actions, task = null, draft = {}) {
         .map((tag) => tag.trim())
         .filter(Boolean)
     });
-    actions.onSave(isEditing ? { ...task, ...nextTask, id: task.id, completed: task.completed, stashed: task.stashed, createdAt: task.createdAt } : nextTask);
+    actions.onSave(isEditing ? { ...task, ...nextTask, id: task.id, completed: task.completed, stashed: task.stashed, folderId: task.folderId, createdAt: task.createdAt } : nextTask);
   });
 
   setTimeout(() => overlay.querySelector(".title-input").focus(), 60);

@@ -1,4 +1,5 @@
 const STORAGE_KEY = "memora_tasks";
+const FOLDERS_KEY = "memora_folders";
 const THEME_KEY = "memora_theme";
 const ONBOARDING_KEY = "memora_onboarding_done";
 const AUTH_KEY = "memora_auth_user";
@@ -80,6 +81,25 @@ const seedTasks = [
   }
 ];
 
+const seedFolders = [
+  {
+    id: "inbox",
+    name: "Inbox",
+    color: "#0A84FF",
+    description: "Saved tasks and ideas that need a home.",
+    archived: false,
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "ideas",
+    name: "Ideas",
+    color: "#9CFF00",
+    description: "Loose thoughts, drafts, and someday items.",
+    archived: false,
+    createdAt: new Date().toISOString()
+  }
+];
+
 export function loadTasks() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) {
@@ -99,6 +119,26 @@ export function saveTasks(tasks) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
 
+export function loadFolders() {
+  const raw = localStorage.getItem(FOLDERS_KEY);
+  if (!raw) {
+    saveFolders(seedFolders);
+    return seedFolders;
+  }
+
+  try {
+    const folders = JSON.parse(raw);
+    return Array.isArray(folders) && folders.length ? folders : seedFolders;
+  } catch {
+    saveFolders(seedFolders);
+    return seedFolders;
+  }
+}
+
+export function saveFolders(folders) {
+  localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
+}
+
 export function createTask(data) {
   return {
     id: crypto.randomUUID(),
@@ -106,6 +146,7 @@ export function createTask(data) {
     notes: data.notes?.trim() || "",
     completed: false,
     stashed: false,
+    folderId: data.folderId || "",
     priority: data.priority || "low",
     tags: data.tags || [],
     dueDate: data.dueDate || isoToday,

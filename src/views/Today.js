@@ -111,7 +111,7 @@ function getTodayNotes() {
     },
     {
       time: "13:30",
-      text: "This space keeps notes and tasks in one quiet stream. Finish what matters, stash what can wait, and let the day stay readable."
+      text: "This space keeps notes and tasks in one quiet stream. Finish what matters, file what can wait, and let the day stay readable."
     }
   ];
 }

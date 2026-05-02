@@ -21,7 +21,9 @@ import {
   getAuthUser,
   getOnboardingDone,
   getTheme,
+  loadFolders,
   loadTasks,
+  saveFolders,
   saveTasks,
   setAuthUser,
   setOnboardingDone,
@@ -45,7 +47,9 @@ const state = {
   authMessage: "",
   calendarMode: "week",
   calendarSettingsOpen: false,
+  folderId: "inbox",
   tasks: loadTasks(),
+  folders: loadFolders(),
   theme: getTheme() || preferredTheme,
   sheetOpen: false,
   editingId: null,
@@ -195,6 +199,23 @@ const actions = {
     };
     render();
   },
+  onAddToFolder(folderId) {
+    const folder = state.folders.find((item) => item.id === folderId);
+    state.sheetOpen = true;
+    state.editingId = null;
+    state.calendarSettingsOpen = false;
+    state.draftTask = {
+      dueDate: todayISO(),
+      dueTime: "09:00",
+      priority: "low",
+      title: "",
+      tags: [folder?.name?.toLowerCase().replace(/\s+/g, "-") || "folder"],
+      folderId,
+      stashed: true,
+      submitLabel: "ADD TO FOLDER"
+    };
+    render();
+  },
   onEdit(id) {
     state.sheetOpen = true;
     state.editingId = id;
@@ -209,7 +230,8 @@ const actions = {
     render();
   },
   onSave(task) {
-    state.tasks = state.editingId ? state.tasks.map((item) => (item.id === task.id ? task : item)) : [task, ...state.tasks];
+    const nextTask = !state.editingId && state.draftTask?.stashed ? { ...task, stashed: true, folderId: state.draftTask.folderId || "inbox" } : task;
+    state.tasks = state.editingId ? state.tasks.map((item) => (item.id === task.id ? task : item)) : [nextTask, ...state.tasks];
     state.sheetOpen = false;
     state.editingId = null;
     state.draftTask = null;
@@ -242,7 +264,56 @@ const actions = {
     persist();
   },
   onStash(id, stashed = true) {
-    state.tasks = state.tasks.map((task) => (task.id === id ? { ...task, stashed } : task));
+    state.tasks = state.tasks.map((task) => (task.id === id ? { ...task, stashed, folderId: stashed ? task.folderId || state.folderId || "inbox" : task.folderId } : task));
+    persist();
+  },
+  onFolderSelect(id) {
+    state.folderId = id;
+    render();
+  },
+  onFolderCreate() {
+    const name = prompt("Folder name");
+    if (!name?.trim()) return;
+    const colors = ["#0A84FF", "#9CFF00", "#FF9500", "#BF5AF2", "#FF3B30"];
+    const folder = {
+      id: crypto.randomUUID(),
+      name: name.trim(),
+      color: colors[state.folders.length % colors.length],
+      description: "Personal folder",
+      archived: false,
+      createdAt: new Date().toISOString()
+    };
+    state.folders = [...state.folders, folder];
+    state.folderId = folder.id;
+    saveFolders(state.folders);
+    render();
+  },
+  onFolderEdit(id) {
+    const folder = state.folders.find((item) => item.id === id);
+    if (!folder) return;
+    const name = prompt("Rename folder", folder.name);
+    if (!name?.trim()) return;
+    state.folders = state.folders.map((item) => (item.id === id ? { ...item, name: name.trim() } : item));
+    saveFolders(state.folders);
+    render();
+  },
+  onFolderArchive(id) {
+    if (id === "inbox") return;
+    state.folders = state.folders.map((item) => (item.id === id ? { ...item, archived: !item.archived } : item));
+    saveFolders(state.folders);
+    render();
+  },
+  onFolderDelete(id) {
+    if (id === "inbox") return;
+    if (!confirm("Delete this folder? Tasks will move to Inbox.")) return;
+    state.folders = state.folders.filter((item) => item.id !== id);
+    state.tasks = state.tasks.map((task) => (task.folderId === id ? { ...task, folderId: "inbox" } : task));
+    state.folderId = "inbox";
+    saveFolders(state.folders);
+    persist();
+  },
+  onMoveToFolder(taskId, folderId) {
+    state.tasks = state.tasks.map((task) => (task.id === taskId ? { ...task, stashed: true, folderId } : task));
     persist();
   },
   onFilter(filter) {
