@@ -14,15 +14,27 @@ Open `http://localhost:4173`.
 
 1. Create a Supabase project.
 2. In Supabase Auth, enable Google provider.
-3. Add your local and production app URLs to Supabase Auth redirect URLs.
+3. Open Authentication → URL Configuration:
+   - Set Site URL to `https://memora-space.vercel.app`
+   - Add Redirect URLs for `https://memora-space.vercel.app/` and any local dev server you actually run, such as `http://localhost:4173/`
+   - Remove `http://localhost:3000` unless you are running this app on port 3000.
 4. Copy `supabase.config.example.js` values into `supabase.config.js`:
 
 ```js
 window.MEMORA_SUPABASE_CONFIG = {
   url: "https://YOUR_PROJECT_REF.supabase.co",
-  publishableKey: "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY"
+  publishableKey: "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY",
+  siteUrl: "https://memora-space.vercel.app/"
 };
 ```
+
+For Google Cloud OAuth, set the authorized redirect URI to your Supabase callback:
+
+```text
+https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback
+```
+
+The authorized JavaScript origins should include `https://memora-space.vercel.app`.
 
 The app uses:
 - Google OAuth via `signInWithOAuth({ provider: "google" })`

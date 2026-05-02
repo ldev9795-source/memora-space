@@ -53,6 +53,8 @@ const state = {
   deferredPrompt: null
 };
 
+readAuthRedirectMessage();
+
 const actions = {
   onNextOnboarding() {
     state.onboardingStep = Math.min(2, state.onboardingStep + 1);
@@ -295,6 +297,16 @@ const actions = {
     render();
   }
 };
+
+function readAuthRedirectMessage() {
+  const params = new URLSearchParams(window.location.search);
+  const oauthError = params.get("error_description") || params.get("error");
+  if (!oauthError) return;
+  state.onboardingDone = true;
+  setOnboardingDone(true);
+  state.authMessage = oauthError.replace(/\+/g, " ");
+  window.history.replaceState({}, document.title, window.location.pathname || "/");
+}
 
 function persist() {
   saveTasks(state.tasks);

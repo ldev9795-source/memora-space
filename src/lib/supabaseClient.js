@@ -41,6 +41,14 @@ export function getSupabaseClient() {
   return client;
 }
 
+export function getAuthRedirectUrl() {
+  const config = getSupabaseConfig();
+  const configuredUrl = config?.siteUrl || config?.redirectTo;
+  const fallbackUrl = window.location.origin;
+  const url = configuredUrl || fallbackUrl;
+  return url.endsWith("/") ? url : `${url}/`;
+}
+
 export async function getSessionUser() {
   const supabase = getSupabaseClient();
   if (!supabase) return null;
@@ -55,7 +63,7 @@ export async function signInWithGoogle() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: window.location.origin
+      redirectTo: getAuthRedirectUrl()
     }
   });
   if (error) throw error;
@@ -68,7 +76,7 @@ export async function sendEmailOtp(email) {
     email,
     options: {
       shouldCreateUser: true,
-      emailRedirectTo: window.location.origin
+      emailRedirectTo: getAuthRedirectUrl()
     }
   });
   if (error) throw error;
