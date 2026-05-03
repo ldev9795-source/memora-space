@@ -9,7 +9,10 @@ export function StashView(state, actions) {
   const archivedFolders = folders.filter((folder) => folder.archived);
   const selectedFolder = folders.find((folder) => folder.id === state.folderId) || activeFolders[0] || folders[0];
   const filedTasks = state.tasks.filter((task) => task.stashed);
+  const filedNotes = (state.notes || []).filter((note) => !note.archived);
   const folderTasks = filedTasks.filter((task) => (task.folderId || "inbox") === selectedFolder?.id);
+  const folderNotes = filedNotes.filter((note) => (note.folderId || "inbox") === selectedFolder?.id);
+  const filedCount = filedTasks.length + filedNotes.length;
 
   root.innerHTML = `
     <header class="topbar folders-topbar">
@@ -22,14 +25,14 @@ export function StashView(state, actions) {
     <section class="folder-hero glass">
       <div class="folder-hero-icon" style="--folder-color:${selectedFolder?.color || "#9CFF00"}">${icons.stash}</div>
       <div>
-        <span class="mono-label">${filedTasks.length} filed items</span>
+        <span class="mono-label">${filedCount} filed items</span>
         <h2>${escapeHTML(selectedFolder?.name || "Folders")}</h2>
-        <p>${escapeHTML(selectedFolder?.description || "Create places for ideas, archived tasks, and reusable notes.")}</p>
+        <p>${escapeHTML(selectedFolder?.description || "Create places for tasks, ideas, and notes.")}</p>
       </div>
       <button class="folder-create" type="button" aria-label="Create folder">${icons.plus}</button>
     </section>
     <section class="folder-strip" aria-label="Folders">
-      ${activeFolders.map((folder) => folderButton(folder, state.folderId, filedTasks)).join("")}
+      ${activeFolders.map((folder) => folderButton(folder, state.folderId, filedTasks, filedNotes)).join("")}
       ${archivedFolders.length ? `<button class="folder-pill archived" type="button" data-folder-archive-list>Archived ${archivedFolders.length}</button>` : ""}
     </section>
     <div class="folder-tools glass">
@@ -39,6 +42,7 @@ export function StashView(state, actions) {
       </label>
       <div class="folder-tool-actions" aria-label="Folder actions">
         <button type="button" data-action="new-task" aria-label="New task">${icons.plus}<span>Task</span></button>
+        <button type="button" data-action="new-note" aria-label="New note">${icons.note}<span>Note</span></button>
         <button type="button" data-action="rename" aria-label="Rename folder">${icons.copy}<span>Rename</span></button>
         <button type="button" data-action="archive" aria-label="${selectedFolder?.archived ? "Unarchive folder" : "Archive folder"}">${icons.download}<span>${selectedFolder?.archived ? "Unarchive" : "Archive"}</span></button>
         <button type="button" data-action="delete" aria-label="Delete folder">${icons.trash}<span>Delete</span></button>
@@ -57,6 +61,10 @@ export function StashView(state, actions) {
     if (archivedFolders[0]) actions.onFolderSelect(archivedFolders[0].id);
   });
   root.querySelector('[data-action="new-task"]').addEventListener("click", () => actions.onAddToFolder(selectedFolder?.id || "inbox"));
+  root.querySelector('[data-action="new-note"]').addEventListener("click", () => {
+    actions.onFolderSelect(selectedFolder?.id || "inbox");
+    actions.onNewNote?.();
+  });
   root.querySelector('[data-action="rename"]').addEventListener("click", () => actions.onFolderEdit(selectedFolder?.id));
   root.querySelector('[data-action="archive"]').addEventListener("click", () => actions.onFolderArchive(selectedFolder?.id));
   root.querySelector('[data-action="delete"]').addEventListener("click", () => actions.onFolderDelete(selectedFolder?.id));
@@ -69,16 +77,20 @@ export function StashView(state, actions) {
     list.replaceChildren();
     list.classList.toggle("folder-grid-mode", state.viewMode === "grid");
     const needle = query.trim().toLowerCase();
-    const visible = needle
+    const visibleTasks = needle
       ? folderTasks.filter((task) => `${task.title} ${task.notes || ""} ${(task.tags || []).join(" ")}`.toLowerCase().includes(needle))
       : folderTasks;
+    const visibleNotes = needle
+      ? folderNotes.filter((note) => `${note.title} ${note.body || ""}`.toLowerCase().includes(needle))
+      : folderNotes;
 
-    if (!visible.length) {
-      list.innerHTML = `<p class="empty-state">${needle ? "NO ITEMS MATCH THIS FOLDER." : "THIS FOLDER IS EMPTY. ARCHIVE TASKS HERE FROM ANY LIST."}</p>`;
+    if (!visibleTasks.length && !visibleNotes.length) {
+      list.innerHTML = `<p class="empty-state">${needle ? "NO ITEMS MATCH THIS FOLDER." : "THIS FOLDER IS EMPTY. MOVE TASKS OR NOTES HERE FROM ANY LIST."}</p>`;
       return;
     }
 
-    visible.forEach((task) => list.append(folderTaskCard(task, folders, actions, state.viewMode)));
+    visibleNotes.forEach((note) => list.append(folderNoteCard(note, folders, actions, state.viewMode)));
+    visibleTasks.forEach((task) => list.append(folderTaskCard(task, folders, actions, state.viewMode)));
   };
 
   search.addEventListener("input", (event) => renderList(event.target.value));
@@ -86,9 +98,42 @@ export function StashView(state, actions) {
   return root;
 }
 
-function folderButton(folder, selectedId, tasks) {
-  const count = tasks.filter((task) => (task.folderId || "inbox") === folder.id).length;
+function folderButton(folder, selectedId, tasks, notes) {
+  const count = tasks.filter((task) => (task.folderId || "inbox") === folder.id).length + notes.filter((note) => (note.folderId || "inbox") === folder.id).length;
   return `<button class="folder-pill${folder.id === selectedId ? " active" : ""}" type="button" data-folder="${folder.id}" style="--folder-color:${folder.color}"><span></span>${escapeHTML(folder.name)} <strong>${count}</strong></button>`;
+}
+
+function folderNoteCard(note, folders, actions, viewMode = "list") {
+  const item = document.createElement("article");
+  item.className = `stash-card folder-card folder-note-card glass${note.pinned ? " pinned" : ""}${viewMode === "grid" ? " folder-card-grid" : ""}`;
+  const date = new Date(note.updatedAt || note.createdAt);
+  item.innerHTML = `
+    <div class="stash-card-meta">
+      <span>${isToday(date) ? "Today" : date.toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
+      <strong>Note</strong>
+    </div>
+    <div class="stash-card-body">
+      <div class="stash-card-topline">
+        <span class="badge">${note.pinned ? "pinned" : "note"}</span>
+      </div>
+      <h2>${escapeHTML(note.title || "Untitled note")}</h2>
+      ${note.body ? `<p>${escapeHTML(note.body)}</p>` : ""}
+      <label class="folder-move">
+        <span class="mono-label">Folder</span>
+        <select>${folders.filter((folder) => !folder.archived).map((folder) => `<option value="${folder.id}" ${folder.id === (note.folderId || "inbox") ? "selected" : ""}>${escapeHTML(folder.name)}</option>`).join("")}</select>
+      </label>
+      <div class="stash-actions">
+        <button type="button" data-action="open">${icons.note}<span>Open</span></button>
+        <button type="button" data-action="pin">${icons.layers}<span>${note.pinned ? "Unpin" : "Pin"}</span></button>
+        <button type="button" data-action="trash">${icons.trash}<span>Delete</span></button>
+      </div>
+    </div>
+  `;
+  item.querySelector("select").addEventListener("change", (event) => actions.onMoveNoteToFolder?.(note.id, event.target.value));
+  item.querySelector('[data-action="open"]').addEventListener("click", () => actions.onOpenNote?.(note.id));
+  item.querySelector('[data-action="pin"]').addEventListener("click", () => actions.onToggleNotePin?.(note.id));
+  item.querySelector('[data-action="trash"]').addEventListener("click", () => actions.onDeleteNote?.(note.id));
+  return item;
 }
 
 function folderTaskCard(task, folders, actions, viewMode = "list") {

@@ -1422,7 +1422,7 @@ button {
 .folder-tool-actions {
   display: grid;
   gap: 6px;
-  grid-template-columns: repeat(4, 42px);
+  grid-template-columns: repeat(5, 42px);
 }
 
 .folder-tool-actions button {
@@ -2493,81 +2493,85 @@ button {
 }
 
 .notes-topbar {
-  align-items: stretch;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.notes-topbar > div:first-child {
-  min-width: 0;
-}
-
-.notes-header-actions {
   align-items: center;
-  display: flex;
-  gap: 8px;
-  justify-content: space-between;
-  margin-left: 0;
-  order: -1;
-  width: 100%;
 }
 
-.notes-mode-switch {
+.notes-hero {
   align-items: center;
-  background: color-mix(in srgb, var(--text) 5%, transparent);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-pill);
-  display: flex;
-  flex: 0 1 auto;
-  gap: 2px;
-  max-width: calc(100% - 54px);
-  padding: 3px;
+  border-radius: 26px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 54px minmax(0, 1fr) 52px;
+  padding: 16px;
 }
 
-.notes-mode-switch button {
+.notes-hero-icon,
+.notes-new {
   align-items: center;
-  background: transparent;
-  border-radius: var(--radius-pill);
-  color: var(--text-secondary);
+  border-radius: 20px;
   display: inline-flex;
-  gap: 4px;
+  height: 52px;
   justify-content: center;
-  min-height: 30px;
-  min-width: 34px;
-  padding: 0 8px;
+  width: 52px;
 }
 
-.notes-mode-switch button.active {
+.notes-hero-icon {
   background: var(--text);
   color: var(--bg);
 }
 
-.notes-mode-switch svg {
-  height: 13px;
-  width: 13px;
+.notes-new {
+  background: var(--accent-green);
+  color: #050605;
 }
 
-.notes-mode-switch span {
-  font-size: 11px;
-  line-height: 1;
+.notes-hero h2 {
+  font-size: 21px;
+  line-height: 1.08;
+  margin: 2px 0 5px;
 }
 
-.notes-content {
+.notes-hero p {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.notes-search {
+  align-items: center;
+  border-radius: var(--radius-pill);
   display: grid;
-  gap: 12px;
+  gap: 10px;
+  grid-template-columns: 22px minmax(0, 1fr);
+  padding: 12px 16px;
+}
+
+.notes-search input {
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  font-size: 15px;
+  min-width: 0;
+  outline: none;
 }
 
 .note-composer {
-  border-radius: 24px;
+  border-radius: 26px;
+  padding: 12px;
+}
+
+.note-composer-form {
   display: grid;
   gap: 9px;
-  padding: 10px;
 }
 
 .note-composer input,
 .note-composer textarea,
+.note-composer select,
 .note-editor input,
-.note-editor textarea {
+.note-editor textarea,
+.note-editor select {
   background: color-mix(in srgb, var(--text) 4%, transparent);
   border: 1px solid var(--hairline);
   border-radius: 16px;
@@ -2581,25 +2585,31 @@ button {
 
 .note-composer input,
 .note-editor input {
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 760;
 }
 
-.note-composer-fields {
+.note-composer-row {
+  align-items: end;
   display: grid;
-  gap: 8px;
+  gap: 9px;
+  grid-template-columns: minmax(0, 1fr) minmax(118px, auto);
 }
 
-.note-composer-actions {
+.note-composer-row label,
+.note-folder-select {
   display: grid;
-  gap: 8px;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+  gap: 6px;
+}
+
+.note-composer-row label span {
+  color: var(--text-secondary);
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
 }
 
 .note-composer button,
-.notes-section-title button,
-.note-delete,
-.reminders-hero button,
-.note-editor-tools button,
 .note-editor-actions button {
   align-items: center;
   border-radius: var(--radius-pill);
@@ -2608,143 +2618,74 @@ button {
   font-size: 10px;
   gap: 7px;
   justify-content: center;
-  min-height: 42px;
+  min-height: 48px;
   text-transform: uppercase;
 }
 
-.note-composer button {
-  background: color-mix(in srgb, var(--text) 5%, transparent);
-  border: 1px solid var(--hairline);
-}
-
-.note-composer button:last-child,
-.notes-section-title button,
-.reminders-hero button,
+.note-composer button,
 .note-editor-actions button:last-child {
   background: var(--text);
   color: var(--bg);
 }
 
-.note-composer svg,
-.notes-section-title svg,
-.note-delete svg,
-.reminders-hero svg,
-.note-editor-tools svg {
-  height: 17px;
-  width: 17px;
-}
-
-.reminders-panel {
-  border-radius: 26px;
+.notes-controls {
   display: grid;
-  gap: 14px;
-  padding: 12px;
+  gap: 10px;
 }
 
-.reminders-hero {
-  align-items: center;
-  display: grid;
-  gap: 12px;
-  grid-template-columns: 48px minmax(0, 1fr) auto;
-}
-
-.reminders-hero-icon {
-  align-items: center;
-  background: color-mix(in srgb, var(--accent-green) 18%, transparent);
-  border-radius: 18px;
-  color: color-mix(in srgb, var(--accent-green) 72%, var(--text));
-  display: inline-flex;
-  height: 48px;
-  justify-content: center;
-  width: 48px;
-}
-
-.reminders-hero h2 {
-  font-size: 19px;
-  line-height: 1.08;
-  margin: 2px 0;
-}
-
-.reminders-hero p {
-  color: var(--text-secondary);
-  font-size: 13px;
-  line-height: 1.35;
-  margin: 0;
-}
-
-.reminders-hero button {
-  height: 44px;
-  min-height: 44px;
-  padding: 0;
-  width: 54px;
-}
-
-.reminders-hero button svg {
-  height: 16px;
-  width: 16px;
-}
-
-.reminders-hero button span {
-  font-size: 9px;
-}
-
-.notes-section-title {
-  align-items: center;
+.notes-folder-strip {
   display: flex;
-  justify-content: space-between;
+  gap: 8px;
+  margin: 0 -2px;
+  overflow-x: auto;
+  padding: 0 2px 3px;
+  scrollbar-width: none;
 }
 
-.notes-list-heading {
+.notes-folder-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.notes-folder-strip button {
+  align-items: center;
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-pill);
   color: var(--text-secondary);
+  display: inline-flex;
+  flex: 0 0 auto;
   font-family: "Space Mono", monospace;
-  font-size: 12px;
-  padding: 0 4px;
+  font-size: 11px;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 14px;
   text-transform: uppercase;
 }
 
-.reminder-list {
-  display: grid;
-  gap: 8px;
+.notes-folder-strip button.active {
+  background: var(--text);
+  color: var(--bg);
 }
 
-.reminder-item {
-  align-items: center;
-  background: color-mix(in srgb, var(--priority-color, var(--text)) 7%, transparent);
-  border: 1px solid color-mix(in srgb, var(--priority-color, var(--text)) 22%, var(--hairline));
-  border-radius: 18px;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: 28px minmax(0, 1fr) 34px;
-  padding: 10px;
+.notes-folder-strip i {
+  background: var(--folder-color, var(--accent-green));
+  border-radius: 50%;
+  height: 8px;
+  width: 8px;
 }
 
-.reminder-item h2 {
-  font-size: 15px;
-  line-height: 1.2;
-  margin: 0;
-}
-
-.reminder-item p {
-  color: var(--text-secondary);
-  font-size: 12px;
-  margin: 4px 0 0;
-}
-
-.reminder-edit {
-  align-items: center;
-  background: transparent;
-  color: var(--text-secondary);
-  display: inline-flex;
-  height: 34px;
-  justify-content: center;
-  padding: 0;
-  width: 34px;
+.notes-controls .view-toggle-slot {
+  justify-self: end;
 }
 
 .notes-grid {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.notes-grid.notes-list-mode {
+  grid-template-columns: 1fr;
 }
 
 .note-card {
@@ -2767,23 +2708,33 @@ button {
   border-color: color-mix(in srgb, var(--accent-green) 35%, var(--hairline));
 }
 
-.note-card-top {
+.note-card-meta {
   align-items: center;
   display: flex;
+  gap: 8px;
   justify-content: space-between;
 }
 
-.note-card-top span {
+.note-card-meta span,
+.note-folder-dot {
   color: var(--text-secondary);
   font-family: "Space Mono", monospace;
   font-size: 10px;
   text-transform: uppercase;
 }
 
-.note-card-top button {
-  background: transparent;
-  color: var(--text-secondary);
-  padding: 0;
+.note-folder-dot {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+}
+
+.note-folder-dot::before {
+  background: var(--folder-color, var(--accent-green));
+  border-radius: 50%;
+  content: "";
+  height: 7px;
+  width: 7px;
 }
 
 .note-card-open {
@@ -2813,11 +2764,27 @@ button {
   -webkit-line-clamp: 5;
 }
 
-.note-delete {
+.note-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.note-card-actions button {
+  align-items: center;
   background: color-mix(in srgb, var(--text) 5%, transparent);
   border: 1px solid var(--hairline);
+  border-radius: 14px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  padding: 0;
+  width: 42px;
+}
+
+.note-card-actions button:last-child {
   color: var(--accent-red);
-  margin-top: auto;
 }
 
 .notes-empty {
@@ -2847,11 +2814,6 @@ button {
   margin: 0;
 }
 
-.reminders-empty {
-  background: color-mix(in srgb, var(--text) 4%, transparent);
-  border: 1px solid var(--hairline);
-}
-
 .note-editor-backdrop {
   align-items: end;
   background: rgba(0, 0, 0, 0.42);
@@ -2866,11 +2828,11 @@ button {
 .note-editor {
   border-radius: 28px;
   display: grid;
-  gap: 10px;
+  gap: 11px;
   max-height: min(82vh, 720px);
   max-width: 480px;
   overflow: auto;
-  padding: 12px;
+  padding: 14px;
   width: 100%;
 }
 
@@ -2889,22 +2851,23 @@ button {
   height: 34px;
   justify-content: center;
   padding: 0;
-  transform: rotate(90deg);
   width: 34px;
 }
 
-.note-editor textarea {
-  min-height: 180px;
+.note-editor-top button:first-child {
+  transform: rotate(180deg);
 }
 
-.note-editor-tools,
+.note-editor textarea {
+  min-height: 240px;
+}
+
 .note-editor-actions {
   display: grid;
   gap: 8px;
   grid-template-columns: 1fr 1fr;
 }
 
-.note-editor-tools button,
 .note-editor-actions button {
   background: color-mix(in srgb, var(--text) 5%, transparent);
   border: 1px solid var(--hairline);
@@ -2912,7 +2875,7 @@ button {
   min-height: 46px;
 }
 
-.note-editor-tools button:nth-child(2) {
+.note-editor-actions button:first-child {
   color: var(--accent-red);
 }
 
@@ -2937,13 +2900,6 @@ button {
   .phone-frame {
     margin-top: 28px;
     min-height: calc(100vh - 56px);
-  }
-}
-
-@media (max-width: 460px) {
-  .notes-mode-switch button {
-    min-height: 32px;
-    padding: 0 9px;
   }
 }
 
@@ -3024,7 +2980,7 @@ button {
   }
 
   .folder-tool-actions {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .notes-grid {

@@ -72,7 +72,7 @@ export function SettingsView(state, actions) {
       <div class="settings-list glass">
         <button class="settings-row" type="button" data-nav="today"><span class="settings-row-icon">${icons.today}</span><span>Today</span>${icons.chevronRight}</button>
         <button class="settings-row" type="button" data-nav="tasks"><span class="settings-row-icon">${icons.tasks}</span><span>Planner</span>${icons.chevronRight}</button>
-        <button class="settings-row" type="button" data-nav="calendar"><span class="settings-row-icon">${icons.note}</span><span>Notes & Reminders</span>${icons.chevronRight}</button>
+        <button class="settings-row" type="button" data-nav="calendar"><span class="settings-row-icon">${icons.note}</span><span>Notes</span>${icons.chevronRight}</button>
         <button class="settings-row" type="button" data-nav="stash"><span class="settings-row-icon">${icons.stash}</span><span>Folders</span>${icons.chevronRight}</button>
       </div>
     </section>
@@ -101,7 +101,7 @@ export function SettingsView(state, actions) {
 
   const feedback = root.querySelector(".settings-feedback");
   root.querySelector('[data-action="export"]').addEventListener("click", async () => {
-    await navigator.clipboard?.writeText(JSON.stringify(state.tasks, null, 2));
+    await navigator.clipboard?.writeText(JSON.stringify({ tasks: state.tasks, notes: state.notes, folders: state.folders }, null, 2));
     feedback.textContent = "Backup copied.";
   });
   root.querySelector('[data-action="reset"]').addEventListener("click", actions.onResetTasks);

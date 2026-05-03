@@ -1,166 +1,151 @@
+import { ViewToggle } from "../components/ViewToggle.js";
 import { icons } from "../components/icons.js";
-import { todayISO } from "../store/tasks.js";
 
 export function NotesView(state, actions) {
   const root = document.createElement("main");
   root.className = `phone-frame page notes-page${state.openNoteId ? " note-modal-open" : ""}`;
-  const mode = state.notesMode === "reminders" ? "reminders" : "notes";
-  const reminders = state.tasks
-    .filter((task) => !task.stashed && !task.completed && (task.tags || []).includes("reminder"))
-    .sort((a, b) => `${a.dueDate || ""}${a.dueTime || ""}`.localeCompare(`${b.dueDate || ""}${b.dueTime || ""}`));
-  const notes = [...(state.notes || [])].sort((a, b) => Number(b.pinned) - Number(a.pinned) || new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
-  const openNote = state.openNoteId ? notes.find((note) => note.id === state.openNoteId) : null;
+  const folders = (state.folders || []).filter((folder) => !folder.archived);
+  const selectedFolder = state.noteFolderId || "all";
+  const query = state.query || "";
+  const activeNotes = normalizeNotes(state.notes || []);
+  const visibleNotes = filterNotes(activeNotes, selectedFolder, query);
+  const pinnedCount = activeNotes.filter((note) => note.pinned).length;
+  const openNote = state.openNoteId ? activeNotes.find((note) => note.id === state.openNoteId) : null;
 
   root.innerHTML = `
     <header class="topbar notes-topbar">
       <div>
         <div class="date-kicker">CAPTURE</div>
-        <h1 class="display-title">${mode === "reminders" ? "Reminders" : "Notes"}</h1>
-        <p class="calendar-page-subtitle">${mode === "reminders" ? "Small nudges for later." : "Tap any note to open and edit it."}</p>
+        <h1 class="display-title">Notes</h1>
+        <p class="calendar-page-subtitle">Write, edit, pin, and file thoughts into folders.</p>
       </div>
-      <div class="notes-header-actions" aria-label="Notes controls">
-        <div class="notes-mode-switch" aria-label="Switch notes mode">
-          <button type="button" data-notes-mode="notes" class="${mode === "notes" ? "active" : ""}" aria-pressed="${mode === "notes"}">${icons.note}<span>Notes</span></button>
-          <button type="button" data-notes-mode="reminders" class="${mode === "reminders" ? "active" : ""}" aria-pressed="${mode === "reminders"}">${icons.bell}<span>Reminders</span></button>
-        </div>
-        <button class="icon-button theme-toggle" type="button" aria-label="Toggle theme">${state.theme === "dark" ? icons.sun : icons.moon}</button>
-      </div>
+      <button class="icon-button theme-toggle" type="button" aria-label="Toggle theme">${state.theme === "dark" ? icons.sun : icons.moon}</button>
     </header>
-    <div class="notes-content"></div>
+    <section class="notes-hero glass">
+      <div class="notes-hero-icon">${icons.note}</div>
+      <div>
+        <span class="mono-label">${activeNotes.length} notes · ${pinnedCount} pinned</span>
+        <h2>Keep every thought easy to find.</h2>
+        <p>Capture quick ideas, open them again, and move them into folders when they need structure.</p>
+      </div>
+      <button type="button" class="notes-new" aria-label="New note">${icons.plus}</button>
+    </section>
+    <label class="notes-search glass">
+      ${icons.search}
+      <input type="search" placeholder="Search notes" value="${escapeAttr(query)}" autocomplete="off" />
+    </label>
+    <section class="note-composer glass" aria-label="Create note">
+      <form class="note-composer-form">
+        <input name="title" placeholder="Title" autocomplete="off" />
+        <textarea name="body" rows="3" placeholder="Start a note..."></textarea>
+        <div class="note-composer-row">
+          <label>
+            <span>Folder</span>
+            <select name="folderId">
+              ${folders.map((folder) => `<option value="${folder.id}" ${folder.id === (state.folderId || "inbox") ? "selected" : ""}>${escapeHTML(folder.name)}</option>`).join("")}
+            </select>
+          </label>
+          <button type="submit">${icons.plus}<span>Add note</span></button>
+        </div>
+      </form>
+    </section>
+    <section class="notes-controls" aria-label="Notes filters">
+      <div class="notes-folder-strip">
+        <button type="button" class="${selectedFolder === "all" ? "active" : ""}" data-note-folder="all">All <strong>${activeNotes.length}</strong></button>
+        <button type="button" class="${selectedFolder === "pinned" ? "active" : ""}" data-note-folder="pinned">Pinned <strong>${pinnedCount}</strong></button>
+        ${folders.map((folder) => noteFolderButton(folder, selectedFolder, activeNotes)).join("")}
+      </div>
+      <div class="view-toggle-slot"></div>
+    </section>
+    <section class="notes-grid ${state.viewMode === "list" ? "notes-list-mode" : ""}" aria-label="Notes"></section>
   `;
 
   root.querySelector(".theme-toggle").addEventListener("click", actions.onTheme);
-  root.querySelectorAll("[data-notes-mode]").forEach((button) => {
-    button.addEventListener("click", () => actions.onNotesMode?.(button.dataset.notesMode));
+  root.querySelector(".notes-new").addEventListener("click", () => actions.onNewNote?.());
+  root.querySelector(".notes-search input").addEventListener("input", (event) => actions.onSearch(event.target.value));
+  root.querySelectorAll("[data-note-folder]").forEach((button) => {
+    button.addEventListener("click", () => actions.onNoteFolder?.(button.dataset.noteFolder));
   });
+  root.querySelector(".view-toggle-slot").append(ViewToggle(state.viewMode, actions, "Notes view mode"));
 
-  const content = root.querySelector(".notes-content");
-  if (mode === "reminders") {
-    content.append(remindersPanel(reminders, actions));
-  } else {
-    content.append(notesPanel(notes, actions));
-  }
-
-  if (openNote) {
-    root.append(noteEditor(openNote, actions));
-  }
-
-  return root;
-}
-
-function notesPanel(notes, actions) {
-  const fragment = document.createDocumentFragment();
-  const composer = document.createElement("form");
-  composer.className = "note-composer glass";
-  composer.setAttribute("aria-label", "Create note");
-  composer.innerHTML = `
-    <div class="note-composer-fields">
-      <input name="title" placeholder="Title" autocomplete="off" />
-      <textarea name="body" rows="2" placeholder="Take a note..."></textarea>
-    </div>
-    <div class="note-composer-actions">
-      <button type="button" data-action="add-reminder">${icons.bell}<span>Reminder</span></button>
-      <button type="submit">${icons.plus}<span>Add</span></button>
-    </div>
-  `;
+  const composer = root.querySelector(".note-composer-form");
   composer.addEventListener("submit", (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const title = String(data.get("title") || "").trim();
     const body = String(data.get("body") || "").trim();
     if (!title && !body) return;
-    actions.onCreateNote({ title, body });
+    actions.onCreateNote({
+      title,
+      body,
+      folderId: data.get("folderId") || "inbox"
+    });
   });
-  composer.querySelector('[data-action="add-reminder"]').addEventListener("click", () => actions.onNotesMode?.("reminders"));
-  fragment.append(composer);
 
-  const heading = document.createElement("div");
-  heading.className = "notes-section-title notes-list-heading";
-  heading.innerHTML = `<span class="mono-label">${notes.length ? `${notes.length} notes` : "Notes"}</span><span>${notes.filter((note) => note.pinned).length} pinned</span>`;
-  fragment.append(heading);
-
-  const grid = document.createElement("section");
-  grid.className = "notes-grid";
-  grid.setAttribute("aria-label", "Notes");
-  if (!notes.length) {
-    grid.innerHTML = `
-      <article class="notes-empty glass">
-        ${icons.note}
-        <h2>No notes yet.</h2>
-        <p>Start with one thought. You can open it again, edit it, pin it, or delete it later.</p>
-      </article>
-    `;
+  const grid = root.querySelector(".notes-grid");
+  if (!visibleNotes.length) {
+    grid.append(emptyNotes(query, selectedFolder));
   } else {
-    notes.forEach((note) => grid.append(noteCard(note, actions)));
+    visibleNotes.forEach((note) => grid.append(noteCard(note, folders, actions)));
   }
-  fragment.append(grid);
-  return fragment;
-}
 
-function remindersPanel(reminders, actions) {
-  const panel = document.createElement("section");
-  panel.className = "reminders-panel glass";
-  panel.setAttribute("aria-label", "Reminders");
-  panel.innerHTML = `
-    <div class="reminders-hero">
-      <div class="reminders-hero-icon">${icons.bell}</div>
-      <div>
-        <span class="mono-label">${reminders.length} active</span>
-        <h2>Keep small things visible.</h2>
-        <p>Reminder tasks stay here until you complete them.</p>
-      </div>
-      <button type="button" data-action="new-reminder">${icons.plus}<span>New</span></button>
-    </div>
-    <div class="reminder-list"></div>
-  `;
-
-  panel.querySelector('[data-action="new-reminder"]').addEventListener("click", () => actions.onAddForDate(todayISO(), "reminder"));
-
-  const list = panel.querySelector(".reminder-list");
-  if (!reminders.length) {
-    list.innerHTML = `
-      <div class="notes-empty reminders-empty">
-        ${icons.calendar}
-        <h2>No reminders.</h2>
-        <p>Add a reminder when something needs to come back at the right moment.</p>
-      </div>
-    `;
-  } else {
-    reminders.forEach((task) => list.append(reminderItem(task, actions)));
+  if (openNote) {
+    root.append(noteEditor(openNote, folders, actions));
   }
-  return panel;
+
+  return root;
 }
 
-function reminderItem(task, actions) {
-  const item = document.createElement("article");
-  item.className = `reminder-item priority-${task.priority || "low"}`;
-  item.innerHTML = `
-    <button class="task-checkbox" type="button" aria-label="Complete reminder"></button>
-    <div>
-      <h2>${escapeHTML(task.title)}</h2>
-      <p>${formatDate(task.dueDate)}${task.dueTime ? ` - ${formatClock(task.dueTime)}` : ""}</p>
-    </div>
-    <button class="reminder-edit" type="button" aria-label="Edit reminder">${icons.chevronRight}</button>
+function normalizeNotes(notes) {
+  return [...notes]
+    .filter((note) => !note.archived)
+    .map((note) => ({ ...note, folderId: note.folderId || "inbox" }))
+    .sort((a, b) => Number(b.pinned) - Number(a.pinned) || new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
+}
+
+function filterNotes(notes, selectedFolder, query) {
+  const needle = String(query || "").trim().toLowerCase();
+  return notes.filter((note) => {
+    const folderMatch = selectedFolder === "all" || (selectedFolder === "pinned" ? note.pinned : (note.folderId || "inbox") === selectedFolder);
+    if (!folderMatch) return false;
+    if (!needle) return true;
+    return `${note.title} ${note.body || ""}`.toLowerCase().includes(needle);
+  });
+}
+
+function noteFolderButton(folder, selectedFolder, notes) {
+  const count = notes.filter((note) => (note.folderId || "inbox") === folder.id).length;
+  return `<button type="button" class="${selectedFolder === folder.id ? "active" : ""}" data-note-folder="${folder.id}" style="--folder-color:${folder.color}"><i></i>${escapeHTML(folder.name)} <strong>${count}</strong></button>`;
+}
+
+function emptyNotes(query, selectedFolder) {
+  const empty = document.createElement("article");
+  empty.className = "notes-empty glass";
+  empty.innerHTML = `
+    ${icons.note}
+    <h2>${query ? "No matching notes." : selectedFolder === "all" ? "No notes yet." : "Nothing filed here."}</h2>
+    <p>${query ? "Try a smaller search or clear the field." : "Start with one thought. You can open it again, edit it, pin it, or move it into a folder later."}</p>
   `;
-  item.querySelector(".task-checkbox").addEventListener("click", () => actions.onToggle?.(task.id));
-  item.querySelector(".reminder-edit").addEventListener("click", () => actions.onEdit?.(task.id));
-  item.querySelector("h2").addEventListener("click", () => actions.onEdit?.(task.id));
-  return item;
+  return empty;
 }
 
-function noteCard(note, actions) {
+function noteCard(note, folders, actions) {
+  const folder = folders.find((item) => item.id === (note.folderId || "inbox"));
   const card = document.createElement("article");
   card.className = `note-card glass${note.pinned ? " pinned" : ""}`;
   card.innerHTML = `
-    <div class="note-card-top">
-      <span>${note.pinned ? "Pinned" : formatDate(note.updatedAt || note.createdAt)}</span>
-      <button type="button" data-action="pin" aria-label="${note.pinned ? "Unpin note" : "Pin note"}">${icons.layers}</button>
-    </div>
     <button class="note-card-open" type="button" aria-label="Open note">
-      <h2>${escapeHTML(note.title)}</h2>
+      <div class="note-card-meta">
+        <span>${note.pinned ? "Pinned" : formatDate(note.updatedAt || note.createdAt)}</span>
+        <span class="note-folder-dot" style="--folder-color:${folder?.color || "#9CFF00"}">${escapeHTML(folder?.name || "Inbox")}</span>
+      </div>
+      <h2>${escapeHTML(note.title || "Untitled note")}</h2>
       ${note.body ? `<p>${escapeHTML(note.body)}</p>` : "<p>No extra text yet.</p>"}
     </button>
-    <button class="note-delete" type="button" data-action="delete">${icons.trash}<span>Delete</span></button>
+    <div class="note-card-actions">
+      <button type="button" data-action="pin" aria-label="${note.pinned ? "Unpin note" : "Pin note"}">${icons.layers}</button>
+      <button type="button" data-action="delete" aria-label="Delete note">${icons.trash}</button>
+    </div>
   `;
   card.querySelector(".note-card-open").addEventListener("click", () => actions.onOpenNote?.(note.id));
   card.querySelector('[data-action="pin"]').addEventListener("click", () => actions.onToggleNotePin?.(note.id));
@@ -168,25 +153,28 @@ function noteCard(note, actions) {
   return card;
 }
 
-function noteEditor(note, actions) {
+function noteEditor(note, folders, actions) {
   const backdrop = document.createElement("div");
   backdrop.className = "note-editor-backdrop";
   backdrop.innerHTML = `
     <form class="note-editor glass" aria-label="Edit note">
       <div class="sheet-handle"></div>
       <div class="note-editor-top">
-        <span class="mono-label">${note.pinned ? "Pinned note" : "Edit note"}</span>
         <button type="button" data-action="close" aria-label="Close editor">${icons.chevronRight}</button>
+        <span class="mono-label">${formatDate(note.updatedAt || note.createdAt)}</span>
+        <button type="button" data-action="pin" aria-label="${note.pinned ? "Unpin note" : "Pin note"}">${icons.layers}</button>
       </div>
       <input name="title" value="${escapeAttr(note.title)}" placeholder="Title" autocomplete="off" />
-      <textarea name="body" rows="8" placeholder="Take a note...">${escapeHTML(note.body || "")}</textarea>
-      <div class="note-editor-tools">
-        <button type="button" data-action="pin">${icons.layers}<span>${note.pinned ? "Unpin" : "Pin"}</span></button>
-        <button type="button" data-action="delete">${icons.trash}<span>Delete</span></button>
-      </div>
+      <textarea name="body" rows="10" placeholder="Start writing...">${escapeHTML(note.body || "")}</textarea>
+      <label class="note-folder-select">
+        <span class="mono-label">Folder</span>
+        <select name="folderId">
+          ${folders.map((folder) => `<option value="${folder.id}" ${folder.id === (note.folderId || "inbox") ? "selected" : ""}>${escapeHTML(folder.name)}</option>`).join("")}
+        </select>
+      </label>
       <div class="note-editor-actions">
-        <button type="button" data-action="cancel">Cancel</button>
-        <button type="submit" data-action="save">Save note</button>
+        <button type="button" data-action="delete">${icons.trash}<span>Delete</span></button>
+        <button type="submit">${icons.tasks}<span>Done</span></button>
       </div>
     </form>
   `;
@@ -196,25 +184,29 @@ function noteEditor(note, actions) {
   const save = () => {
     actions.onUpdateNote?.(note.id, {
       title: form.elements.title.value,
-      body: form.elements.body.value
+      body: form.elements.body.value,
+      folderId: form.elements.folderId.value
     });
   };
   backdrop.addEventListener("click", (event) => {
-    if (event.target === backdrop) close();
+    if (event.target === backdrop) save();
   });
-  form.querySelector('[data-action="close"]').addEventListener("click", close);
-  form.querySelector('[data-action="cancel"]').addEventListener("click", close);
-  form.querySelector('[data-action="pin"]').addEventListener("click", () => actions.onToggleNotePin?.(note.id));
+  form.querySelector('[data-action="close"]').addEventListener("click", save);
+  form.querySelector('[data-action="pin"]').addEventListener("click", () =>
+    actions.onUpdateNote?.(note.id, {
+      title: form.elements.title.value,
+      body: form.elements.body.value,
+      folderId: form.elements.folderId.value,
+      keepOpen: true,
+      togglePin: true
+    })
+  );
   form.querySelector('[data-action="delete"]').addEventListener("click", () => actions.onDeleteNote?.(note.id));
-  form.querySelector('[data-action="save"]').addEventListener("click", (event) => {
-    event.preventDefault();
-    save();
-  });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     save();
   });
-  form.querySelectorAll("input, textarea").forEach((field) => {
+  form.querySelectorAll("input, textarea, select").forEach((field) => {
     field.addEventListener("focus", () => {
       window.setTimeout(() => field.scrollIntoView({ block: "center", behavior: "smooth" }), 80);
     });
@@ -222,18 +214,10 @@ function noteEditor(note, actions) {
   return backdrop;
 }
 
-function formatClock(value) {
-  const [hours = "0", minutes = "00"] = value.split(":");
-  const hour = Number(hours);
-  const period = hour >= 12 ? "PM" : "AM";
-  const displayHour = hour % 12 || 12;
-  return `${displayHour}:${String(minutes).padStart(2, "0")} ${period}`;
-}
-
 function formatDate(value) {
-  if (!value) return "Anytime";
+  if (!value) return "Today";
   const date = new Date(value.includes("T") ? value : `${value}T00:00:00`);
-  return Number.isNaN(date.getTime()) ? "Anytime" : date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  return Number.isNaN(date.getTime()) ? "Today" : date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
 function escapeHTML(value) {

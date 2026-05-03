@@ -39,9 +39,9 @@ export function TodayView(state, actions) {
     </section>
     <section class="today-compact glass" aria-label="Today actions">
       <button type="button" data-action="add-task">${icons.plus}<span>Task</span></button>
-      <button type="button" data-action="add-reminder">${icons.bell}<span>Reminder</span></button>
       <button type="button" data-action="notes">${icons.note}<span>Note</span></button>
       <button type="button" data-action="planner">${icons.calendar}<span>Plan</span></button>
+      <button type="button" data-action="folders">${icons.stash}<span>Folder</span></button>
     </section>
     <section class="today-metrics" aria-label="Today metrics">
       <span><strong>${openTasks.length}</strong> Open</span>
@@ -64,9 +64,9 @@ export function TodayView(state, actions) {
   root.querySelector(".theme-toggle").addEventListener("click", actions.onTheme);
   root.querySelector(".settings-open").addEventListener("click", actions.onSettings);
   root.querySelector('[data-action="add-task"]').addEventListener("click", actions.onAdd);
-  root.querySelector('[data-action="add-reminder"]').addEventListener("click", () => actions.onAddForDate(today, "reminder"));
   root.querySelector('[data-action="notes"]').addEventListener("click", () => actions.onTab("calendar"));
   root.querySelector('[data-action="planner"]').addEventListener("click", () => actions.onTab("tasks"));
+  root.querySelector('[data-action="folders"]').addEventListener("click", () => actions.onTab("stash"));
   root.querySelectorAll("[data-scope]").forEach((button) => {
     button.addEventListener("click", () => actions.onTodayScope(button.dataset.scope));
   });

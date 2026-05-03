@@ -57,7 +57,7 @@ const state = {
   authMessage: "",
   calendarMode: "week",
   viewMode: getViewMode(),
-  notesMode: "notes",
+  noteFolderId: "all",
   openNoteId: null,
   calendarSettingsOpen: false,
   folderId: "inbox",
@@ -202,6 +202,15 @@ const actions = {
     render();
   },
   onAdd() {
+    if (state.tab === "calendar") {
+      const note = { ...createNote({ title: "Untitled note", body: "", folderId: state.folderId || "inbox" }), title: "" };
+      state.notes = [note, ...state.notes];
+      state.openNoteId = note.id;
+      state.noteFolderId = "all";
+      saveNotes(state.notes);
+      render();
+      return;
+    }
     state.sheetOpen = true;
     state.openNoteId = null;
     state.editingId = null;
@@ -218,11 +227,11 @@ const actions = {
     state.calendarSettingsOpen = false;
     state.draftTask = {
       dueDate: date,
-      dueTime: kind === "reminder" ? "09:00" : "12:00",
-      priority: kind === "reminder" ? "medium" : "low",
-      title: kind === "reminder" ? "Reminder" : "",
-      tags: kind === "reminder" ? ["reminder"] : ["event"],
-      submitLabel: kind === "reminder" ? "ADD REMINDER" : "ADD EVENT"
+      dueTime: "12:00",
+      priority: "low",
+      title: "",
+      tags: kind === "event" ? ["event"] : [],
+      submitLabel: kind === "event" ? "ADD EVENT" : "ADD TASK"
     };
     render();
   },
@@ -382,15 +391,22 @@ const actions = {
     saveNotes(state.notes);
     render();
   },
-  onNotesMode(mode) {
-    const nextMode = mode === "reminders" ? "reminders" : "notes";
-    if (state.notesMode === nextMode && !state.openNoteId) return;
-    state.notesMode = nextMode;
-    state.openNoteId = null;
+  onNewNote() {
+    const note = { ...createNote({ title: "Untitled note", body: "", folderId: state.folderId || "inbox" }), title: "" };
+    state.notes = [note, ...state.notes];
+    state.openNoteId = note.id;
+    state.tab = "calendar";
+    state.noteFolderId = "all";
+    saveNotes(state.notes);
+    render();
+  },
+  onNoteFolder(folderId) {
+    state.noteFolderId = folderId || "all";
     render();
   },
   onOpenNote(id) {
     state.openNoteId = id;
+    state.tab = "calendar";
     render();
   },
   onCloseNote() {
@@ -400,18 +416,27 @@ const actions = {
   onUpdateNote(id, data) {
     const title = String(data.title || "").trim();
     const body = String(data.body || "").trim();
-    if (!title && !body) return;
+    const folderId = data.folderId || "inbox";
+    if (!title && !body) {
+      state.notes = state.notes.filter((note) => note.id !== id);
+      state.openNoteId = null;
+      saveNotes(state.notes);
+      render();
+      return;
+    }
     state.notes = state.notes.map((note) =>
       note.id === id
         ? {
             ...note,
             title: title || "Untitled note",
             body,
+            folderId,
+            pinned: data.togglePin ? !note.pinned : note.pinned,
             updatedAt: new Date().toISOString()
           }
         : note
     );
-    state.openNoteId = null;
+    if (!data.keepOpen) state.openNoteId = null;
     saveNotes(state.notes);
     render();
   },
@@ -423,6 +448,11 @@ const actions = {
   },
   onToggleNotePin(id) {
     state.notes = state.notes.map((note) => (note.id === id ? { ...note, pinned: !note.pinned } : note));
+    saveNotes(state.notes);
+    render();
+  },
+  onMoveNoteToFolder(noteId, folderId) {
+    state.notes = state.notes.map((note) => (note.id === noteId ? { ...note, folderId, updatedAt: new Date().toISOString() } : note));
     saveNotes(state.notes);
     render();
   },
@@ -474,9 +504,13 @@ const actions = {
     render();
   },
   onResetTasks() {
-    if (!confirm("Delete every local task and start with a clean workspace?")) return;
+    if (!confirm("Delete every local task, note, and folder and start with a clean workspace?")) return;
     localStorage.removeItem("memora_tasks");
+    localStorage.removeItem("memora_notes");
+    localStorage.removeItem("memora_folders");
     state.tasks = loadTasks();
+    state.notes = loadNotes();
+    state.folders = loadFolders();
     state.tab = "today";
     render();
   },

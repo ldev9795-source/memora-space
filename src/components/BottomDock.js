@@ -25,7 +25,7 @@ export function BottomDock(activeTab, actions) {
   const fab = document.createElement("button");
   fab.className = "dock-fab";
   fab.type = "button";
-  fab.setAttribute("aria-label", "Add task");
+  fab.setAttribute("aria-label", activeTab === "calendar" ? "Add note" : "Add task");
   fab.innerHTML = icons.plus;
   fab.addEventListener("click", actions.onAdd);
   dock.append(fab);

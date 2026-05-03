@@ -95,14 +95,17 @@ export function saveNotes(notes) {
 }
 
 export function createNote(data) {
+  const now = new Date().toISOString();
   return {
     id: crypto.randomUUID(),
     title: data.title?.trim() || "Untitled note",
     body: data.body?.trim() || "",
     color: data.color || "default",
+    folderId: data.folderId || "inbox",
     pinned: Boolean(data.pinned),
     archived: false,
-    createdAt: new Date().toISOString()
+    createdAt: now,
+    updatedAt: now
   };
 }
 

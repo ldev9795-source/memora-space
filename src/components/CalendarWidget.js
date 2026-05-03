@@ -38,7 +38,7 @@ export function CalendarWidget(tasks, selectedDate, actions, options = {}) {
     <div class="${isMonth ? "month-grid" : "week-grid"} calendar-grid-v2"></div>
     <div class="calendar-feedback" aria-live="polite">${selectedTasks.length ? `${selectedTasks.length} scheduled · ${completed} done` : "Tap a day or add an event."}</div>
     <div class="calendar-actions calendar-actions-v2">
-      <button class="calendar-action secondary" type="button" data-action="reminder">${icons.today}<span>Reminder</span></button>
+      <button class="calendar-action secondary" type="button" data-action="task">${icons.today}<span>Task</span></button>
       <button class="calendar-action primary" type="button" data-action="event">${icons.plus}<span>Event</span></button>
     </div>
   `;
@@ -50,7 +50,7 @@ export function CalendarWidget(tasks, selectedDate, actions, options = {}) {
   card.querySelectorAll("[data-move]").forEach((button) => {
     button.addEventListener("click", () => actions.onCalendarMove?.(Number(button.dataset.move)));
   });
-  card.querySelector('[data-action="reminder"]').addEventListener("click", () => actions.onAddForDate?.(selectedDate, "reminder"));
+  card.querySelector('[data-action="task"]').addEventListener("click", () => actions.onAddForDate?.(selectedDate, "task"));
   card.querySelector('[data-action="event"]').addEventListener("click", () => actions.onAddForDate?.(selectedDate, "event"));
 
   const grid = card.querySelector(".calendar-grid-v2");

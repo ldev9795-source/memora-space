@@ -4,19 +4,19 @@ const slides = [
   {
     eyebrow: "Capture",
     title: "Your day, one quiet timeline.",
-    copy: "Tasks, notes, reminders, and small thoughts live together without clutter.",
+    copy: "Tasks, notes, and small thoughts live together without clutter.",
     icon: icons.today
   },
   {
     eyebrow: "Plan",
-    title: "Calendar that behaves like mobile.",
-    copy: "Tap dates, jump weeks, create reminders, and keep the selected day readable.",
-    icon: icons.calendar
+    title: "A planner that stays focused.",
+    copy: "Search, filter, and switch between list or grid views without extra calendar noise.",
+    icon: icons.tasks
   },
   {
     eyebrow: "Save",
     title: "Folders for everything later.",
-    copy: "Create personal spaces, file paused tasks, and bring them back when they matter.",
+    copy: "Create personal spaces, file tasks and notes, and bring them back when they matter.",
     icon: icons.stash
   }
 ];
