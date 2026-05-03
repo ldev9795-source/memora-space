@@ -1298,14 +1298,6 @@ button {
   min-width: 24px;
 }
 
-.planner-page .calendar-card-v2 {
-  margin-top: 0;
-}
-
-.planner-calendar-slot {
-  margin-bottom: 8px;
-}
-
 .stash-summary {
   align-items: center;
   display: grid;
