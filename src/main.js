@@ -53,6 +53,8 @@ const state = {
   authMessage: "",
   calendarMode: "week",
   viewMode: getViewMode(),
+  notesMode: "notes",
+  openNoteId: null,
   calendarSettingsOpen: false,
   folderId: "inbox",
   tasks: loadTasks(),
@@ -173,6 +175,7 @@ const actions = {
   onTab(tab) {
     if (state.tab === tab && !state.sheetOpen && !state.folderSheet && !state.calendarSettingsOpen) return;
     state.tab = tab;
+    state.openNoteId = null;
     state.folderSheet = null;
     state.sheetOpen = false;
     state.calendarSettingsOpen = false;
@@ -180,6 +183,7 @@ const actions = {
   },
   onSettings() {
     state.tab = "settings";
+    state.openNoteId = null;
     state.sheetOpen = false;
     state.folderSheet = null;
     state.calendarSettingsOpen = false;
@@ -187,6 +191,7 @@ const actions = {
   },
   onProfile() {
     state.tab = "profile";
+    state.openNoteId = null;
     state.sheetOpen = false;
     state.folderSheet = null;
     state.calendarSettingsOpen = false;
@@ -194,6 +199,7 @@ const actions = {
   },
   onAdd() {
     state.sheetOpen = true;
+    state.openNoteId = null;
     state.editingId = null;
     state.draftTask = null;
     state.folderSheet = null;
@@ -202,6 +208,7 @@ const actions = {
   },
   onAddForDate(date, kind = "task") {
     state.sheetOpen = true;
+    state.openNoteId = null;
     state.editingId = null;
     state.folderSheet = null;
     state.calendarSettingsOpen = false;
@@ -371,8 +378,42 @@ const actions = {
     saveNotes(state.notes);
     render();
   },
+  onNotesMode(mode) {
+    const nextMode = mode === "reminders" ? "reminders" : "notes";
+    if (state.notesMode === nextMode && !state.openNoteId) return;
+    state.notesMode = nextMode;
+    state.openNoteId = null;
+    render();
+  },
+  onOpenNote(id) {
+    state.openNoteId = id;
+    render();
+  },
+  onCloseNote() {
+    state.openNoteId = null;
+    render();
+  },
+  onUpdateNote(id, data) {
+    const title = String(data.title || "").trim();
+    const body = String(data.body || "").trim();
+    if (!title && !body) return;
+    state.notes = state.notes.map((note) =>
+      note.id === id
+        ? {
+            ...note,
+            title: title || "Untitled note",
+            body,
+            updatedAt: new Date().toISOString()
+          }
+        : note
+    );
+    state.openNoteId = null;
+    saveNotes(state.notes);
+    render();
+  },
   onDeleteNote(id) {
     state.notes = state.notes.filter((note) => note.id !== id);
+    if (state.openNoteId === id) state.openNoteId = null;
     saveNotes(state.notes);
     render();
   },
