@@ -5,6 +5,8 @@ const THEME_KEY = "memora_theme";
 const VIEW_MODE_KEY = "memora_view_mode";
 const ONBOARDING_KEY = "memora_onboarding_done";
 const AUTH_KEY = "memora_auth_user";
+const WORKSPACE_VERSION_KEY = "memora_workspace_version";
+const CURRENT_WORKSPACE_VERSION = 2;
 
 const seedFolders = [
   {
@@ -37,6 +39,16 @@ export function loadTasks() {
   } catch {
     return [];
   }
+}
+
+export function ensureFreshWorkspace() {
+  const version = Number(localStorage.getItem(WORKSPACE_VERSION_KEY) || 0);
+  if (version >= CURRENT_WORKSPACE_VERSION) return;
+
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(NOTES_KEY);
+  localStorage.removeItem(FOLDERS_KEY);
+  localStorage.setItem(WORKSPACE_VERSION_KEY, String(CURRENT_WORKSPACE_VERSION));
 }
 
 export function saveTasks(tasks) {

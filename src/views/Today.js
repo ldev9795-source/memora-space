@@ -20,7 +20,7 @@ export function TodayView(state, actions) {
   const overdue = state.tasks.some((task) => task.dueDate < today && !task.completed && !task.stashed);
   const scope = state.todayScope || "open";
   const scopedTasks = applyTodayScope(todayTasks, scope);
-  const notes = scope === "done" ? [] : getTodayNotes();
+  const notes = [];
 
   root.innerHTML = `
     <header class="topbar today-topbar">
@@ -94,19 +94,6 @@ function applyTodayScope(tasks, scope) {
   if (scope === "done") return tasks.filter((task) => task.completed);
   if (scope === "all") return tasks;
   return tasks.filter((task) => !task.completed);
-}
-
-function getTodayNotes() {
-  return [
-    {
-      time: "10:30",
-      text: "Had a great day at work today. Made progress on the project and received positive feedback from the team. Inspiration for brand aesthetics."
-    },
-    {
-      time: "13:30",
-      text: "This space keeps notes and tasks in one quiet stream. Finish what matters, file what can wait, and let the day stay readable."
-    }
-  ];
 }
 
 function formatClock(value) {

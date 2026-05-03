@@ -19,6 +19,7 @@ import {
 } from "./lib/supabaseClient.js";
 import {
   clearAuthUser,
+  ensureFreshWorkspace,
   getAuthUser,
   getOnboardingDone,
   getTheme,
@@ -39,6 +40,9 @@ import {
 
 const app = document.querySelector("#app");
 const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+ensureFreshWorkspace();
+
 const state = {
   tab: "today",
   filter: "all",
