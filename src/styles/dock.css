@@ -29,7 +29,7 @@
 .icon-button svg,
 .quick-input svg {
   height: 21px;
-  stroke-width: 1.8;
+  stroke-width: 1.9;
   width: 21px;
 }
 
@@ -54,7 +54,7 @@
 }
 
 .dock-tab.active::after {
-  background: var(--accent-blue);
+  background: var(--accent-green);
   border-radius: 999px;
   bottom: 4px;
   content: "";
@@ -67,7 +67,7 @@
   align-items: center;
   background: var(--text);
   border-radius: 999px;
-  color: var(--bg);
+  color: var(--bg-soft);
   display: inline-flex;
   height: 52px;
   justify-content: center;

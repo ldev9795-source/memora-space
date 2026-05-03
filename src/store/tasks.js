@@ -12,7 +12,7 @@ const seedFolders = [
   {
     id: "inbox",
     name: "Inbox",
-    color: "#0A84FF",
+    color: "#9CFF00",
     description: "Saved tasks and ideas that need a home.",
     archived: false,
     createdAt: new Date().toISOString()
@@ -20,7 +20,7 @@ const seedFolders = [
   {
     id: "ideas",
     name: "Ideas",
-    color: "#9CFF00",
+    color: "#060607",
     description: "Loose thoughts, drafts, and someday items.",
     archived: false,
     createdAt: new Date().toISOString()
@@ -64,7 +64,10 @@ export function loadFolders() {
 
   try {
     const folders = JSON.parse(raw);
-    return Array.isArray(folders) && folders.length ? folders : seedFolders;
+    if (!Array.isArray(folders) || !folders.length) return seedFolders;
+    const normalized = normalizeDefaultFolders(folders);
+    if (JSON.stringify(normalized) !== JSON.stringify(folders)) saveFolders(normalized);
+    return normalized;
   } catch {
     saveFolders(seedFolders);
     return seedFolders;
@@ -172,4 +175,12 @@ function localISO(date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function normalizeDefaultFolders(folders) {
+  return folders.map((folder) => {
+    if (folder.id === "inbox") return { ...folder, color: "#9CFF00" };
+    if (folder.id === "ideas") return { ...folder, color: "#060607" };
+    return folder;
+  });
 }

@@ -327,7 +327,7 @@ const actions = {
       return;
     }
 
-    const colors = ["#0A84FF", "#9CFF00", "#FF9500", "#BF5AF2", "#FF3B30"];
+    const colors = ["#9CFF00", "#060607", "#FF3B30", "#C9CEC3"];
     const folder = {
       id: crypto.randomUUID(),
       name,

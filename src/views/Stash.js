@@ -20,7 +20,7 @@ export function StashView(state, actions) {
       <button class="icon-button theme-toggle" type="button" aria-label="Toggle theme">${state.theme === "dark" ? icons.sun : icons.moon}</button>
     </header>
     <section class="folder-hero glass">
-      <div class="folder-hero-icon" style="--folder-color:${selectedFolder?.color || "#0A84FF"}">${icons.stash}</div>
+      <div class="folder-hero-icon" style="--folder-color:${selectedFolder?.color || "#9CFF00"}">${icons.stash}</div>
       <div>
         <span class="mono-label">${filedTasks.length} filed items</span>
         <h2>${escapeHTML(selectedFolder?.name || "Folders")}</h2>
